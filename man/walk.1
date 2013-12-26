@@ -1,4 +1,4 @@
-.TH WALK "1" "September 2010" "walk 1.1" "walk"
+.TH WALK "1" "February 2012" "walk 1.1" "walk"
 
 .SH NAME
 walk \- enter and manipulate archive files like directories
@@ -22,21 +22,31 @@ and whatever else you wish to do with its contents.
 \fBwalk\fR uses the \fBfile\fR tool to determine the archive file type.
 Currently, it supports handling these file types:
 
-- tar
-.br
-- tar, compressed with gzip or bzip2
-.br
-- zip
-.br
-- rar
-.br
-- cpio
-.br
-- ar
+.IP - 2
+tar
+.IP - 2
+tar, compressed with gzip/bzip2/xz
+(requires tar with built-in support for these compression formats,
+ i.e. the -zjJ options)
+.IP - 2
+7-zip
+(requires the 7zr binariy)
+.IP - 2
+zip
+(requires Info-ZIP compatible zip and unzip binaries)
+.IP - 2
+rar
+(requires the A.Roshal's rar binary)
+.IP - 2
+cpio
+(requires the GNU cpio binary)
+.IP - 2
+ar
+(requires the GNU binutils ar binary)
 .SH EXAMPLE
 
 .nf
-mle@box:~$ walk test.tgz
+mle@box:~$ \fBwalk test.tgz\fR
  walk: unpacking archive
  ./
  ./httpd.conf
@@ -48,24 +58,24 @@ mle@box:~$ walk test.tgz
  ./subdir/a3
  walk: starting new shell
 mle@box:~/test.tgz$ 
-mle@box:~/test.tgz$ ls -la
- drwxr-xr-x  3 mle users 4,0K 2010-09-28 02:44 ./
- drwx-----x 24 mle users 4,0K 2010-09-28 02:53 ../
+mle@box:~/test.tgz$ \fBls -la\fR
+ drwxr-xr-x  3 mle users 4,0K 2010-09-28 02:44 .
+ drwx-----x 24 mle users 4,0K 2010-09-28 02:53 ..
  -rw-r-----  1 mle users  30K 2010-09-28 02:42 httpd.conf
  -rw-r--r--  1 mle users 437K 2010-09-28 02:41 rawdata
- drwxr-xr-x  2 mle users 4,0K 2010-09-28 02:45 subdir/
- -rwxr-xr-x  1 mle users  14K 2010-09-28 02:44 uname*
-mle@box:~/test.tgz$ ls -l subdir/
+ drwxr-xr-x  2 mle users 4,0K 2010-09-28 02:45 subdir
+ -rwxr-xr-x  1 mle users  14K 2010-09-28 02:44 uname
+mle@box:~/test.tgz$ \fBls -l subdir/\fR
  -rw-r--r-- 1 mle users 300 2010-09-28 02:45 a1
  -rw-r--r-- 1 mle users 400 2010-09-28 02:45 a2
  -rw-r--r-- 1 mle users 500 2010-09-28 02:45 a3
-mle@box:~/test.tgz$ rm subdir/a2
-mle@box:~/test.tgz$ echo foo > bar
-mle@box:~/test.tgz$ >rawdata
+mle@box:~/test.tgz$ \fBrm subdir/a2\fR
+mle@box:~/test.tgz$ \fBecho foo > bar\fR
+mle@box:~/test.tgz$ \fB>rawdata\fR
 mle@box:~/test.tgz$ 
-mle@box:~/test.tgz$ exit
+mle@box:~/test.tgz$ \fBexit\fR
  walk: shell terminated.
- walk: Recreate archive test.tgz ? [Y/n]  y
+ walk: Recreate archive test.tgz ? [Y/n]  \fBy\fR
  walk: recreating archive
  ./
  ./httpd.conf
@@ -75,12 +85,12 @@ mle@box:~/test.tgz$ exit
  ./subdir/
  ./subdir/a1
  ./subdir/a3
- walk: Delete temporary directory? [Y/n]  y
+ walk: Delete temporary directory? [Y/n]  \fBy\fR
  walk: deleting temp dir
 mle@box:~$ 
-mle@box:~$ ls -lad test*
+mle@box:~$ \fBls -lad test*\fR
  -rw-r--r-- 1 mle users 19K 2010-09-28 02:56 test.tgz
-mle@box:~$ tar tfzv test.tgz
+mle@box:~$ \fBtar tfzv test.tgz\fR
  drwxr-xr-x mle/users         0 2010-09-28 02:55:12 ./
  -rw-r----- mle/users     30398 2010-09-28 02:42:48 ./httpd.conf
  -rw-r--r-- mle/users         4 2010-09-28 02:55:12 ./bar

@@ -10,10 +10,10 @@ clean:
 install:
 	mkdir -p /usr/local/share/man/man1
 	
-	cp -i man/*.1 /usr/local/share/man/man1/
-	chmod 0644 /usr/local/share/man/man?/walk.?
-	gzip /usr/local/share/man/man?/walk.?
+	cp -i man/walk.1 /usr/local/share/man/man1/
+	chmod 0644 /usr/local/share/man/man1/walk.1
+	gzip /usr/local/share/man/man1/walk.1
 	
-	cp src/walk*sh $(DEST)
+	cp src/walk-1.1.sh $(DEST)
+	chmod 0755 $(DEST)
 	chown $(CHOWN) $(DEST)
-	chmod 755 $(DEST)
