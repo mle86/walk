@@ -39,6 +39,7 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "shell terminates, walk will ask you whether you want to re-create"
 	echo "the archive from that directory and whether you want to delete the"
 	echo "temporary directory."
+	echo "Empty archives can be created with the -c option."
 	echo ""
 	echo "Recognized archive types:"
 	echo " - tar, tar.gz, tar.bz2, tar.xz (requires tar with built-in compression support)"
