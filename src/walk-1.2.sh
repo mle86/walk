@@ -1,6 +1,5 @@
 #!/bin/sh
 #set -e
-set -x
 
 #  walk v1.2
 #  
@@ -24,6 +23,13 @@ set -x
 prog=`basename "$0"`
 create_empty=
 
+EXIT_SYNTAX=1
+EXIT_HELP=0
+EXIT_NOTFOUND=5
+EXIT_NOTAFILE=4
+EXIT_EXISTS=2
+EXIT_UNKNOWNTYPE=3
+
 # Check arguments
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "syntax: $prog [-c] ARCHIVE "
@@ -41,7 +47,7 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo " - rar (requires rar)"
 	echo " - cpio, ar"
 	echo ""
-	exit 0
+	exit $EXIT_HELP
 fi
 if [ "$1" = "-c" ]; then
 	create_empty=1
@@ -49,7 +55,7 @@ if [ "$1" = "-c" ]; then
 fi
 if [ -z "$1" ]; then
 	echo "syntax: $prog [-c] ARCHIVE ">&2
-	exit 1
+	exit $EXIT_SYNTAX
 fi
 
 archv="$(readlink -f "$1")"  # absolute path
@@ -57,31 +63,23 @@ temp="$(dirname "$archv")/.$(basename "$archv")-WALK-"`date '+%Y%m%d-%H%M%S'`
 
 if [ ! -e "$archv" -a -z "$create_empty" ]; then
 	echo "$prog: $archv not found" >&2
-	exit 5
+	exit $EXIT_NOTFOUND
 fi
 if [ -e "$archv" -a ! -f "$archv" ]; then
 	echo "$prog: $archv is not a file" >&2
-	exit 4
+	exit $EXIT_NOTAFILE
 fi
 if [ -e "$temp" ]; then
 	echo "$prog: File or folder $temp already exists!" >&2
-	exit 2
+	exit $EXIT_EXISTS
 fi
 
 usearchv="$temp"
-call_pack=
-call_unpack=
-suffix_pack="."
-suffix_unpack=
 
 #####################################################################
 
 unpack_archive () {
 	# Determine archive file type
-
-	#echo "  PACK: $call_pack"
-	#echo "UNPACK: $call_unpack"
-	#exit
 
 	# Rename archive file
 	mv "$archv" "$temp"
@@ -90,7 +88,7 @@ unpack_archive () {
 	echo "$prog: unpacking archive"
 	mkdir -m 0700 "$archv"
 	cd "$archv"
-	$call_unpack "$usearchv" $suffix_unpack
+	fn_unpack "$usearchv"
 }
 
 create_archive () {
@@ -112,7 +110,7 @@ repack_archive () {
 	case "$recreate" in
 		y|Y|yes|"")
 		echo "$prog: recreating archive"
-		sh -c "$call_pack \"$usearchv\" $suffix_pack"
+		fn_pack "$usearchv"
 		;;
 	esac
 }
@@ -134,7 +132,6 @@ cleanup () {
 }
 
 tartype () {
-	echo "[TARTYPE:$1]"
 	case "$1" in
 		*"(gz"*" compressed"*|"X-"*".tgz"|"X-"*".tar.gz")
 			# gzip
@@ -150,7 +147,7 @@ tartype () {
 			;;
 		*"GNU"*") ("*|*"compr"*|*"extract"*)
 			# unknown
-			echo UNKN TAR
+			echo "UNKNOWN TAR TYPE" >&2
 			return 1
 			;;
 		*)
@@ -163,7 +160,7 @@ tartype () {
 determine_archive_type () {
 	if ! archvtype; then
 		echo "$prog: unknown archive file type!" >&2
-		exit 3
+		exit $EXIT_UNKNOWNTYPE
 	fi
 }
 
@@ -174,8 +171,6 @@ archvtype () {
 		ft="X-${archv}"
 	fi
 
-	echo "[FT=$ft]"
-
 	case "$ft" in
 		*"tar archive"*|"X-"*".tar"|"X-"*".tar."*|"X-"*".tgz"|"X-"*".tbz2"|"X-"*".tbz"|"X-"*".txz"****)
 			taropt="--same-owner -spvSf"
@@ -183,35 +178,33 @@ archvtype () {
 			taropt_bzip2='-j'
 			taropt_xz='-J'
 			tartype "$ft" || return 2
-			call_unpack="tar -x $taropt"
-			call_pack="tar -c $taropt"
+			fn_unpack () { tar -x $taropt "$1"   ; }
+			fn_pack   () { tar -c $taropt "$1" . ; }
 			;;
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
-			call_unpack="7zr e $z7opt"
-			call_pack="7zr a $z7opt"
+			fn_unpack () { 7zr e $z7opt "$1"   ; }
+			fn_pack   () { 7zr a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r -r0 -tl"
-			call_unpack="rar e $raropt"
-			call_pack="rar u $raropt"
+			fn_unpack () { rar e $raropt "$1"   ; }
+			fn_pack   () { rar u $raropt "$1" . ; }
 			;;
 		*"zip archive"*|"X-"*".zip")
 			zipopt="-v"
-			call_unpack="UNZIP= unzip -o -X $zipopt"
-			call_pack="ZIP= ZIPOPT= zip -u -y -R $zipopt"
+			fn_unpack () { UNZIP=       unzip -o -X    $zipopt "$1"   ; }
+			fn_pack   () { ZIP= ZIPOPT= zip   -u -y -R $zipopt "$1" . ; }
 			;;
 		*"cpio archive"*|"X-"*".cpio")
 			cpioopt="-v -B -F"
-			call_unpack="cpio -i -d --no-absolute-filenames --sparse $cpioopt"
-			call_pack="find . -print0 -mindepth 1 | cpio -0 -o -H crc $cpioopt"
-			suffix_pack=
+			fn_unpack () { cpio -i -d --no-absolute-filenames --sparse    $cpioopt "$1" ; }
+			fn_pack   () { find . -print0 -mindepth 1 | cpio -0 -o -H crc $cpioopt "$1" ; }
 			;;
 		*" ar archive"*|"X-"*".a")
 			aropt="sv"
-			call_unpack="ar x${aropt}"
-			call_pack="find . -mindepth 1 ; find . -mindepth 1 | xargs ar r${aropt}"
-			suffix_pack=
+			fn_unpack () { ar x${aropt} "$1" ; }
+			fn_pack   () { find . -mindepth 1 | xargs ar r${aropt} "$1" ; }
 			;;
 		*)
 			return 1
@@ -224,19 +217,15 @@ archvtype () {
 
 determine_archive_type
 
-echo "1: U($usearchv) A($archv) T($temp)"
 if [ -e "$archv" ]; then
 	unpack_archive
 else
 	create_archive
 fi
 
-echo "2: U($usearchv) A($archv) T($temp)"
-
 enter_tempdir
 
 repack_archive
-echo "3: U($usearchv) A($archv) T($temp)"
 cleanup
 
 # fin
