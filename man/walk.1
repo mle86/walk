@@ -1,9 +1,10 @@
-.TH WALK "1" "February 2012" "walk 1.1" "walk"
+.TH WALK "1" "January 2015" "walk 1.2" "walk"
 
 .SH NAME
 walk \- enter and manipulate archive files like directories
 .SH SYNOPSIS
 \fBwalk\fR
+[\fB-c\fR]
 \fBARCHIVE\fR
 .SH DESCRIPTION
 \fBwalk\fR is a shell tool
@@ -18,10 +19,15 @@ with the contents of the temporary directory (which you may have changed).
 This way, you can interactively edit an existing archive,
 examine its content, add files to it
 and whatever else you wish to do with its contents.
+
+If \fBwalk\fR is invoked on a non-existing filename or a non-file name,
+it will print an error and exit.
+By supplying the \fB-c\fR option, \fBwalk\fR will accept non-existing filenames
+and create a new, empty archive with that name.
+This can be used to create new archives from scratch.
 .SH SUPPORTED FILE TYPES
 \fBwalk\fR uses the \fBfile\fR tool to determine the archive file type.
 Currently, it supports handling these file types:
-
 .IP - 2
 tar
 .IP - 2
@@ -30,19 +36,34 @@ tar, compressed with gzip/bzip2/xz
  i.e. the -zjJ options)
 .IP - 2
 7-zip
-(requires the 7zr binariy)
+(requires the \fB7zr\fR binary)
 .IP - 2
 zip
-(requires Info-ZIP compatible zip and unzip binaries)
+(requires Info-ZIP compatible \fBzip\fR and \fBunzip\fR binaries)
 .IP - 2
 rar
-(requires the A.Roshal's rar binary)
+(requires the A.Roshal's \fBrar\fR binary)
 .IP - 2
 cpio
-(requires the GNU cpio binary)
+(requires the GNU \fBcpio\fR binary)
 .IP - 2
 ar
-(requires the GNU binutils ar binary)
+(requires the GNU binutils \fBar\fR binary)
+.LP
+If the \fB-c\fR option has been used to create a new empty archive,
+the \fBfile\fR tool cannot be used, as there is no prior archive file.
+In this case, the type is guessed from the filename extension.
+These extensions are recognized:
+
+ .tar,
+ .tar.gz/.tgz,
+ .tar.bz/.tbz/tar.bz2/.tbz2,
+ .tar.xz/.txz,
+ .7z,
+ .zip,
+ .rar,
+ .cpio,
+ .a (for \fBar\fR archives)
 .SH EXAMPLE
 
 .nf
@@ -101,4 +122,4 @@ mle@box:~$ \fBtar tfzv test.tgz\fR
  -rw-r--r-- mle/users       500 2010-09-28 02:45:35 ./subdir/a3
 .fi
 .SH AUTHOR
-Maximilian Eul <mle @T multinion NOSPAMPLEASE.de>
+Maximilian Eul <mle AT multinion.de>
