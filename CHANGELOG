@@ -1,3 +1,8 @@
+v1.2 (January 2015)
+	- New -c argument allows creating empty archives
+	- Fixed relative directory handling
+	- Removed bash dependency
+
 v1.1 (February 2012)
 	- Added xz and tar types
 
@@ -5,3 +10,4 @@ v1.0 (September 2010)
 	- Added archive file type recognition
 
 v0.9 (June 2010)
+
