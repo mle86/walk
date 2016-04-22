@@ -1,0 +1,94 @@
+.TH WALK "1" "September 2010" "walk 1.1" "walk"
+
+.SH NAME
+walk \- enter and manipulate archive files like directories
+.SH SYNOPSIS
+\fBwalk\fR
+\fBARCHIVE\fR
+.SH DESCRIPTION
+\fBwalk\fR is a shell tool
+which allows you to treat archive files as directories.
+It completely unpacks an archive file
+into a temporary directory named exactly as the archive itself.
+It then spawns a new shell inside the new temporary directory,
+where you may proceed with any command line stuff you wish to do.
+After leaving this shell,
+\fBwalk\fR asks you if you wish to re-pack the archive
+with the contents of the temporary directory (which you may have changed).
+This way, you can interactively edit an existing archive,
+examine its content, add files to it
+and whatever else you wish to do with its contents.
+.SH SUPPORTED FILE TYPES
+\fBwalk\fR uses the \fBfile\fR tool to determine the archive file type.
+Currently, it supports handling these file types:
+
+- tar
+.br
+- tar, compressed with gzip or bzip2
+.br
+- zip
+.br
+- rar
+.br
+- cpio
+.br
+- ar
+.SH EXAMPLE
+
+.nf
+mle@box:~$ walk test.tgz
+ walk: unpacking archive
+ ./
+ ./httpd.conf
+ ./rawdata
+ ./uname
+ ./subdir/
+ ./subdir/a1
+ ./subdir/a2
+ ./subdir/a3
+ walk: starting new shell
+mle@box:~/test.tgz$ 
+mle@box:~/test.tgz$ ls -la
+ drwxr-xr-x  3 mle users 4,0K 2010-09-28 02:44 ./
+ drwx-----x 24 mle users 4,0K 2010-09-28 02:53 ../
+ -rw-r-----  1 mle users  30K 2010-09-28 02:42 httpd.conf
+ -rw-r--r--  1 mle users 437K 2010-09-28 02:41 rawdata
+ drwxr-xr-x  2 mle users 4,0K 2010-09-28 02:45 subdir/
+ -rwxr-xr-x  1 mle users  14K 2010-09-28 02:44 uname*
+mle@box:~/test.tgz$ ls -l subdir/
+ -rw-r--r-- 1 mle users 300 2010-09-28 02:45 a1
+ -rw-r--r-- 1 mle users 400 2010-09-28 02:45 a2
+ -rw-r--r-- 1 mle users 500 2010-09-28 02:45 a3
+mle@box:~/test.tgz$ rm subdir/a2
+mle@box:~/test.tgz$ echo foo > bar
+mle@box:~/test.tgz$ >rawdata
+mle@box:~/test.tgz$ 
+mle@box:~/test.tgz$ exit
+ walk: shell terminated.
+ walk: Recreate archive test.tgz ? [Y/n]  y
+ walk: recreating archive
+ ./
+ ./httpd.conf
+ ./bar
+ ./rawdata
+ ./uname
+ ./subdir/
+ ./subdir/a1
+ ./subdir/a3
+ walk: Delete temporary directory? [Y/n]  y
+ walk: deleting temp dir
+mle@box:~$ 
+mle@box:~$ ls -lad test*
+ -rw-r--r-- 1 mle users 19K 2010-09-28 02:56 test.tgz
+mle@box:~$ tar tfzv test.tgz
+ drwxr-xr-x mle/users         0 2010-09-28 02:55:12 ./
+ -rw-r----- mle/users     30398 2010-09-28 02:42:48 ./httpd.conf
+ -rw-r--r-- mle/users         4 2010-09-28 02:55:12 ./bar
+ -rw-r--r-- mle/users         0 2010-09-28 02:55:24 ./rawdata
+ -rwxr-xr-x mle/users     13900 2010-09-28 02:44:45 ./uname
+ drwxr-xr-x mle/users         0 2010-09-28 02:54:50 ./subdir/
+ -rw-r--r-- mle/users       300 2010-09-28 02:45:28 ./subdir/a1
+ -rw-r--r-- mle/users       500 2010-09-28 02:45:35 ./subdir/a3
+.fi
+.SH AUTHOR
+Maximilian Eul <mle @T multinion NOSPAMPLEASE.de>
