@@ -56,7 +56,7 @@ ask () {
 
 
 # Check arguments
-syntaxline="syntax: $prog [-c] ARCHIVE "
+syntaxline="syntax: $prog [-c] [-A] ARCHIVE "
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "$syntaxline"
 	echo ""
@@ -66,6 +66,9 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "the archive from that directory and whether you want to delete the"
 	echo "temporary directory."
 	echo "Empty archives can be created with the -c option."
+	echo "If the working directory root (.) should be archived too (tar and cpio"
+	echo "support this), use the -A option.  NB: Unpacking such archives may change"
+	echo "your current directory's owner and mode!"
 	echo ""
 	echo "Recognized archive types:"
 	echo " - tar, tar.gz, tar.bz2, tar.xz (requires tar with built-in compression support)"
@@ -78,6 +81,10 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 fi
 if [ "$1" = "-c" ]; then
 	create_empty=yes
+	shift
+fi
+if [ "$1" = "-A" ]; then
+	pack_root=yes
 	shift
 fi
 if [ -z "$1" ]; then

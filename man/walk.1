@@ -5,6 +5,7 @@ walk \- enter and manipulate archive files like directories
 .SH SYNOPSIS
 \fBwalk\fR
 [\fB-c\fR]
+[\fB-A\fR]
 \fBARCHIVE\fR
 .SH DESCRIPTION
 \fBwalk\fR is a shell tool
@@ -51,7 +52,8 @@ ar
 (requires the GNU binutils \fBar\fR binary)
 .LP
 If the \fB-c\fR option has been used to create a new empty archive,
-the \fBfile\fR tool cannot be used, as there is no prior archive file.
+the \fBfile\fR tool cannot be used,
+as there is no prior archive file to analyze.
 In this case, the type is guessed from the filename extension.
 These extensions are recognized:
 
@@ -64,12 +66,27 @@ These extensions are recognized:
  .rar,
  .cpio,
  .a (for \fBar\fR archives)
+.SH OPTIONS
+.TP
+.B -c
+Create non-existing \fBARCHIVE\fRs
+instead of exiting with an error.
+.TP
+.B -A
+Store the working directory root (\fB.\fR) in the archive,
+not just its contents.
+Not all archivers support this
+(\fBtar\fR and \fBcpio\fR do).
+.br
+Unpacking archives which contain the \fB.\fR directory entry
+can cause the current directory's owner and/or mode to be changed
+by the archiver program,
+so use this option with caution.
 .SH EXAMPLE
 
 .nf
 mle@box:~$ \fBwalk test.tgz\fR
  walk: unpacking archive
- ./
  ./httpd.conf
  ./rawdata
  ./uname
@@ -81,7 +98,7 @@ mle@box:~$ \fBwalk test.tgz\fR
 mle@box:~/test.tgz$ 
 mle@box:~/test.tgz$ \fBls -la\fR
  drwxr-xr-x  3 mle users 4,0K 2010-09-28 02:44 .
- drwx-----x 24 mle users 4,0K 2010-09-28 02:53 ..
+ drwx------ 24 mle users 4,0K 2010-09-28 02:53 ..
  -rw-r-----  1 mle users  30K 2010-09-28 02:42 httpd.conf
  -rw-r--r--  1 mle users 437K 2010-09-28 02:41 rawdata
  drwxr-xr-x  2 mle users 4,0K 2010-09-28 02:45 subdir
@@ -98,7 +115,6 @@ mle@box:~/test.tgz$ \fBexit\fR
  walk: shell terminated.
  walk: Recreate archive test.tgz ? [Y/n]  \fBy\fR
  walk: recreating archive
- ./
  ./httpd.conf
  ./bar
  ./rawdata
@@ -109,10 +125,9 @@ mle@box:~/test.tgz$ \fBexit\fR
  walk: Delete temporary directory? [Y/n]  \fBy\fR
  walk: deleting temp dir
 mle@box:~$ 
-mle@box:~$ \fBls -lad test*\fR
+mle@box:~$ \fBls -l test*\fR
  -rw-r--r-- 1 mle users 19K 2010-09-28 02:56 test.tgz
-mle@box:~$ \fBtar tfzv test.tgz\fR
- drwxr-xr-x mle/users         0 2010-09-28 02:55:12 ./
+mle@box:~$ \fBtar tzvf test.tgz\fR
  -rw-r----- mle/users     30398 2010-09-28 02:42:48 ./httpd.conf
  -rw-r--r-- mle/users         4 2010-09-28 02:55:12 ./bar
  -rw-r--r-- mle/users         0 2010-09-28 02:55:24 ./rawdata
