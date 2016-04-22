@@ -225,7 +225,7 @@ archvtype () {
 			fn_pack     () { 7zr a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
-			raropt="-o+ -ol -ow -r -r0 -tl"
+			raropt="-o+ -ol -ow -r0 -tl"
 			fn_unpack   () { rar x $raropt "$1"   ; }
 			fn_packroot () { rar u $raropt "$1" . ; }
 			fn_pack     () { rar u $raropt "$1" . ; }
@@ -235,7 +235,7 @@ archvtype () {
 			export ZIP=
 			export ZIPOPT=
 			zipopt="-v"
-			fn_unpack   () { unzip -o -X    $zipopt "$1"   ; }
+			fn_unpack   () { unzip -X       $zipopt "$1"   ; }
 			fn_packroot () { zip   -u -y -r $zipopt "$1" . ; }
 			fn_pack     () { zip   -u -y -r $zipopt "$1" . ; }
 			;;
