@@ -174,13 +174,14 @@ archvtype () {
 
 	case "$ft" in
 		*"tar archive"*|"X-"*".tar"|"X-"*".tar."*|"X-"*".tgz"|"X-"*".tbz2"|"X-"*".tbz"|"X-"*".txz"****)
-			taropt="--same-owner -spvSf"
+			taropt="-pvS"
+			taropt_extract='-s'
 			taropt_gzip='-z'
 			taropt_bzip2='-j'
 			taropt_xz='-J'
 			tartype "$ft" || return 2
-			fn_unpack () { tar -x $taropt "$1"   ; }
-			fn_pack   () { tar -c $taropt "$1" . ; }
+			fn_unpack () { tar -x $taropt $taropt_extract -f "$1"   ; }
+			fn_pack   () { tar -c $taropt                 -f "$1" . ; }
 			;;
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
