@@ -112,7 +112,9 @@ unpack_archive () {
 }
 
 create_working_dir () {
-	mkdir -m 0700 "$1"
+	# Don't set any special modes -- it'll depend on the user's umask.
+	# If the unpacked archive contains a '.' entry, that will overwrite the mode anyway. 
+	mkdir "$1"
 	cd "$1"
 }
 
