@@ -220,13 +220,13 @@ archvtype () {
 			;;
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
-			fn_unpack   () { 7zr e $z7opt "$1"   ; }
+			fn_unpack   () { 7zr x $z7opt "$1"   ; }
 			fn_packroot () { 7zr a $z7opt "$1" . ; }
 			fn_pack     () { 7zr a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r -r0 -tl"
-			fn_unpack   () { rar e $raropt "$1"   ; }
+			fn_unpack   () { rar x $raropt "$1"   ; }
 			fn_packroot () { rar u $raropt "$1" . ; }
 			fn_pack     () { rar u $raropt "$1" . ; }
 			;;
