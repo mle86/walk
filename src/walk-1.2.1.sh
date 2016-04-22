@@ -26,6 +26,7 @@ msgprefix="$prog: "
 
 create_empty=
 pack_root=
+force_answer=
 
 EXIT_SYNTAX=1
 EXIT_HELP=0
@@ -49,14 +50,24 @@ fail () {
 ask () {
 	# 1=prompt, 2=default
 	local response=
-	read -p "$1 " response
-	[ -z "$response" ] && response="$2"  # use default, might be empty itself
+	if [ "$force_answer" = "default" ]; then
+		# use default answer for all questions,
+		# or 'yes' if there is no default for this question
+		response="${2:-yes}"
+	elif [ "$force_answer" ]; then
+		# use $force_answer for all questions
+		response="$force_answer"
+	else
+		# show prompt, query answer from user
+		read -p "$1 " response
+		[ -z "$response" ] && response="$2"  # use default, might be empty itself
+	fi
 	[ "$response" = "y" -o "$response" = "Y" -o "$response" = "yes" -o "$response" = "Yes" ]  # is "yes"-like?
 }
 
 
 # Check arguments
-syntaxline="syntax: $prog [-c] [-A] ARCHIVE "
+syntaxline="syntax: $prog [-c] [-y] [-A] ARCHIVE "
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "$syntaxline"
 	echo ""
@@ -66,6 +77,7 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "the archive from that directory and whether you want to delete the"
 	echo "temporary directory."
 	echo "Empty archives can be created with the -c option."
+	echo "The -y option causes all questions to be answered with \`yes'."
 	echo "If the working directory root (.) should be archived too (tar and cpio"
 	echo "support this), use the -A option.  NB: Unpacking such archives may change"
 	echo "your current directory's owner and mode!"
@@ -81,6 +93,10 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 fi
 if [ "$1" = "-c" ]; then
 	create_empty=yes
+	shift
+fi
+if [ "$1" = "-y" ]; then
+	force_answer=yes
 	shift
 fi
 if [ "$1" = "-A" ]; then

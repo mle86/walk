@@ -5,6 +5,7 @@ walk \- enter and manipulate archive files like directories
 .SH SYNOPSIS
 \fBwalk\fR
 [\fB-c\fR]
+[\fB-y\fR]
 [\fB-A\fR]
 \fBARCHIVE\fR
 .SH DESCRIPTION
@@ -71,6 +72,11 @@ These extensions are recognized:
 .B -c
 Create non-existing \fBARCHIVE\fRs
 instead of exiting with an error.
+.TP
+.B -y
+Assume `yes' for the two questions \fBwalk\fR asks after leaving the subshell.
+This means the original archive will always be recreated,
+and the temporary archive directory will always be removed afterwards. 
 .TP
 .B -A
 Store the working directory root (\fB.\fR) in the archive,
