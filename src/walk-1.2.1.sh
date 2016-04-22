@@ -20,7 +20,9 @@
 #  along with walk.  If not, see <http://www.gnu.org/licenses/>.
 
 
-prog=`basename "$0"`
+prog="$(basename "$0")"
+errprefix="$prog: "
+msgprefix="$prog: "
 create_empty=
 
 EXIT_SYNTAX=1
@@ -30,9 +32,31 @@ EXIT_NOTAFILE=4
 EXIT_EXISTS=2
 EXIT_UNKNOWNTYPE=3
 
+msg  () { echo "$msgprefix$@" ; }
+err  () { echo "$errprefix$@" >&2 ; }
+fail () {
+	# fail [EXITSTATUS=1] MESSAGE
+	local status=1
+	if [ -n "$2" ]; then
+		status="$1"
+		shift
+	fi
+	err "$1"
+	exit $status
+}
+ask () {
+	# 1=prompt, 2=default
+	local response=
+	read -p "$1 " response
+	[ -z "$response" ] && response="$2"  # use default, might be empty itself
+	[ "$response" = "y" -o "$response" = "Y" -o "$response" = "yes" -o "$response" = "Yes" ]  # is "yes"-like?
+}
+
+
 # Check arguments
+syntaxline="syntax: $prog [-c] ARCHIVE "
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
-	echo "syntax: $prog [-c] ARCHIVE "
+	echo "$syntaxline"
 	echo ""
 	echo "walk v1.2.1 will unpack an archive file into a new directory of the"
 	echo "same name and spawn a new shell within that directory. After said"
@@ -51,28 +75,27 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	exit $EXIT_HELP
 fi
 if [ "$1" = "-c" ]; then
-	create_empty=1
+	create_empty=yes
 	shift
 fi
 if [ -z "$1" ]; then
-	echo "syntax: $prog [-c] ARCHIVE ">&2
-	exit $EXIT_SYNTAX
+	errprefix=
+	fail $EXIT_SYNTAX "$syntaxline"
 fi
 
 archv="$(readlink -f "$1")"  # absolute path
-temp="$(dirname "$archv")/.$(basename "$archv")-WALK-"`date '+%Y%m%d-%H%M%S'`
+temp="$(dirname "$archv")/.$(basename "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
 
 if [ ! -e "$archv" -a -z "$create_empty" ]; then
-	echo "$prog: $archv not found" >&2
+	err "$archv not found"
+	err "Do you want to create an empty archive? Use the -c option"
 	exit $EXIT_NOTFOUND
 fi
 if [ -e "$archv" -a ! -f "$archv" ]; then
-	echo "$prog: $archv is not a file" >&2
-	exit $EXIT_NOTAFILE
+	fail $EXIT_NOTAFILE "$archv is not a file"
 fi
 if [ -e "$temp" ]; then
-	echo "$prog: File or folder $temp already exists!" >&2
-	exit $EXIT_EXISTS
+	fail $EXIT_EXISTS "File or folder $temp already exists!"
 fi
 
 usearchv="$temp"
@@ -80,55 +103,42 @@ usearchv="$temp"
 #####################################################################
 
 unpack_archive () {
-	# Determine archive file type
-
 	# Rename archive file
 	mv "$archv" "$temp"
 
-	# Unpack archive
-	echo "$prog: unpacking archive"
-	mkdir -m 0700 "$archv"
-	cd "$archv"
+	# Unpack archive into new working dir of same name
+	create_working_dir "$archv"
 	fn_unpack "$usearchv"
 }
 
-create_archive () {
-	echo "$prog: creating archive"
-	mkdir -m 0755 "$archv"
-	cd "$archv"
+create_working_dir () {
+	mkdir -m 0700 "$1"
+	cd "$1"
 }
 
 enter_tempdir () {
-	# Start walking shell
-	echo "$prog: starting new shell"
-	unset IGNOREEOF
+	# Start new subshell:
+	msg "starting new shell"
 	${SHELL:-'/bin/bash'} -i  || true
-	echo "$prog: shell terminated."
+	msg "shell terminated."
 }
 
 repack_archive () {
-	read -p "$prog: Recreate archive $archv ? [Y/n] " recreate
-	case "$recreate" in
-		y|Y|yes|"")
-		echo "$prog: recreating archive"
+	if ask "Recreate archive $archv ? [Y/n]" y; then
+		msg "recreating archive"
 		fn_pack "$usearchv"
-		;;
-	esac
+	fi
 }
 
 cleanup () {
-	read -p "$prog: Delete temporary directory? [Y/n] " deltemp
-	case "$deltemp" in
-		y|Y|yes|"")
-			echo "$prog: deleting temp dir"
-			rm -rf "$archv"
-			;;
-		*)
-			save="${archv}-`date +'%Y%m%d-%H%M'`"
-			echo "$prog: renaming temp dir to $save"
-			mv "$archv" "$save"
-			;;
-	esac
+	if ask "Delete temporary directory? [Y/n]" y; then
+		msg "deleting temp dir"
+		rm -rf "$archv"
+	else
+		save="${archv}-$(date +'%Y%m%d-%H%M')"
+		msg "renaming temp dir to $save"
+		mv "$archv" "$save"
+	fi
 	mv "$temp" "$archv"
 }
 
@@ -142,13 +152,13 @@ tartype () {
 			# bz2
 			taropt="$taropt_bzip2 $taropt"
 			;;
-		*"(XZ"*" compressed"*|"X-"*".tar.xz"|"X-"*".txz")
+		*"(xz"*" compressed"*|"X-"*".tar.xz"|"X-"*".txz")
 			# xz
 			taropt="$taropt_xz $taropt"
 			;;
-		*"GNU"*") ("*|*"compr"*|*"extract"*)
+		*"gnu"*") ("*|*"compr"*|*"extract"*)
 			# unknown
-			echo "UNKNOWN TAR TYPE" >&2
+			err "UNKNOWN TAR TYPE"
 			return 1
 			;;
 		*)
@@ -160,26 +170,28 @@ tartype () {
 
 determine_archive_type () {
 	if ! archvtype; then
-		echo "$prog: unknown archive file type!" >&2
-		exit $EXIT_UNKNOWNTYPE
+		fail $EXIT_UNKNOWNTYPE "unknown archive file type!"
 	fi
 }
 
 archvtype () {
+	local filetype=
 	if [ -e "$archv" ]; then
-		ft=`file -Nbz "$archv" 2>/dev/null | tr \'[A-Z]\' \'[a-z]\'` || return 1
+		# File exists, try to determine type using 'file' tool
+		filetype="$(file -Nbz "$archv" 2>/dev/null | tr '[A-Z]' '[a-z]')" || return 1
 	else
-		ft="X-${archv}"
+		# File does not yet exist -- try to guess type from filename itself
+		filetype="X-${archv}"
 	fi
 
-	case "$ft" in
-		*"tar archive"*|"X-"*".tar"|"X-"*".tar."*|"X-"*".tgz"|"X-"*".tbz2"|"X-"*".tbz"|"X-"*".txz"****)
+	case "$filetype" in
+		*"tar archive"*|"X-"*".tar"|"X-"*".tar."*|"X-"*".tgz"|"X-"*".tbz2"|"X-"*".tbz"|"X-"*".txz")
 			taropt="-pvS"
-			taropt_extract='-s'
-			taropt_gzip='-z'
-			taropt_bzip2='-j'
-			taropt_xz='-J'
-			tartype "$ft" || return 2
+			local taropt_extract='-s'
+			local taropt_gzip='-z'
+			local taropt_bzip2='-j'
+			local taropt_xz='-J'
+			tartype "$filetype" || return 2
 			fn_unpack () { tar -x $taropt $taropt_extract -f "$1"   ; }
 			fn_pack   () { tar -c $taropt                 -f "$1" . ; }
 			;;
@@ -220,9 +232,11 @@ archvtype () {
 determine_archive_type
 
 if [ -e "$archv" ]; then
+	msg "unpacking archive"
 	unpack_archive
 else
-	create_archive
+	msg "creating archive"
+	create_working_dir "$archv"
 fi
 
 enter_tempdir
