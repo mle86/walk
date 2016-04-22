@@ -23,7 +23,9 @@
 prog="$(basename "$0")"
 errprefix="$prog: "
 msgprefix="$prog: "
+
 create_empty=
+pack_root=
 
 EXIT_SYNTAX=1
 EXIT_HELP=0
@@ -128,7 +130,11 @@ enter_tempdir () {
 repack_archive () {
 	if ask "Recreate archive $archv ? [Y/n]" y; then
 		msg "recreating archive"
-		fn_pack "$usearchv"
+		if [ "$pack_root" ]; then
+			fn_packroot "$usearchv"
+		else
+			fn_pack "$usearchv"
+		fi
 	fi
 }
 
@@ -201,36 +207,42 @@ archvtype () {
 			local taropt_bzip2='-j'
 			local taropt_xz='-J'
 			tartype "$filetype" || return 2
-			fn_unpack () { tar -x $taropt $taropt_extract -f "$1"   ; }
-			fn_pack   () { tar -c $taropt                 -f "$1" . ; }
+			fn_unpack   () {             tar -x $taropt $taropt_extract -f "$1"             ; }
+			fn_packroot () {             tar -c $taropt                 -f "$1" .           ; }
+			fn_pack     () { find_flat | tar -c $taropt                 -f "$1" --null -T - ; }
 			;;
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
-			fn_unpack () { 7zr e $z7opt "$1"   ; }
-			fn_pack   () { 7zr a $z7opt "$1" . ; }
+			fn_unpack   () { 7zr e $z7opt "$1"   ; }
+			fn_packroot () { 7zr a $z7opt "$1" . ; }
+			fn_pack     () { 7zr a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r -r0 -tl"
-			fn_unpack () { rar e $raropt "$1"   ; }
-			fn_pack   () { rar u $raropt "$1" . ; }
+			fn_unpack   () { rar e $raropt "$1"   ; }
+			fn_packroot () { rar u $raropt "$1" . ; }
+			fn_pack     () { rar u $raropt "$1" . ; }
 			;;
 		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
 			export UNZIP=
 			export ZIP=
 			export ZIPOPT=
 			zipopt="-v"
-			fn_unpack () { unzip -o -X    $zipopt "$1"   ; }
-			fn_pack   () { zip   -u -y -r $zipopt "$1" . ; }
+			fn_unpack   () { unzip -o -X    $zipopt "$1"   ; }
+			fn_packroot () { zip   -u -y -r $zipopt "$1" . ; }
+			fn_pack     () { zip   -u -y -r $zipopt "$1" . ; }
 			;;
 		*"cpio archive"*|"X-"*".cpio")
 			cpioopt="-v -B -F"
-			fn_unpack () { cpio -i -d --no-absolute-filenames --sparse $cpioopt "$1" ; }
-			fn_pack   () { find_root | cpio -0 -o -H crc               $cpioopt "$1" ; }
+			fn_unpack   () { cpio -i -d --no-absolute-filenames --sparse $cpioopt "$1" ; }
+			fn_packroot () { find_root | cpio -0 -o -H crc               $cpioopt "$1" ; }
+			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt "$1" ; }
 			;;
 		*" ar archive"*|"X-"*".a")
 			aropt="sv"
-			fn_unpack () {                              ar x${aropt} "$1" ; }
-			fn_pack   () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
+			fn_unpack   () {                              ar x${aropt} "$1" ; }
+			fn_packroot () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
+			fn_pack     () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
 			;;
 		*)
 			return 1
