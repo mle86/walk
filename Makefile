@@ -14,6 +14,7 @@ install:
 	chmod 0644 /usr/local/share/man/man1/walk.1
 	gzip -f /usr/local/share/man/man1/walk.1
 	
-	cp src/walk-1.2.sh $(DEST)
+	cp src/walk-1.2.1.sh $(DEST)
 	chmod 0755 $(DEST)
 	chown $(CHOWN) $(DEST)
+

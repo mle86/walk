@@ -1,7 +1,7 @@
 #!/bin/sh
 #set -e
 
-#  walk v1.2
+#  walk v1.2.1
 #  
 #  Copyright (C) 2015  Maximilian L. Eul
 #  This file is part of walk.
@@ -34,7 +34,7 @@ EXIT_UNKNOWNTYPE=3
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "syntax: $prog [-c] ARCHIVE "
 	echo ""
-	echo "walk v1.2 will unpack an archive file into a new directory of the"
+	echo "walk v1.2.1 will unpack an archive file into a new directory of the"
 	echo "same name and spawn a new shell within that directory. After said"
 	echo "shell terminates, walk will ask you whether you want to re-create"
 	echo "the archive from that directory and whether you want to delete the"
