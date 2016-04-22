@@ -44,7 +44,7 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo "Recognized archive types:"
 	echo " - tar, tar.gz, tar.bz2, tar.xz (requires tar with built-in compression support)"
 	echo " - 7-zip (requires 7zr)"
-	echo " - zip (requires zip/unzip)"
+	echo " - zip, jar (requires zip/unzip)"
 	echo " - rar (requires rar)"
 	echo " - cpio, ar"
 	echo ""
@@ -192,7 +192,7 @@ archvtype () {
 			fn_unpack () { rar e $raropt "$1"   ; }
 			fn_pack   () { rar u $raropt "$1" . ; }
 			;;
-		*"zip archive"*|"X-"*".zip")
+		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
 			zipopt="-v"
 			fn_unpack () { UNZIP=       unzip -o -X    $zipopt "$1"   ; }
 			fn_pack   () { ZIP= ZIPOPT= zip   -u -y -R $zipopt "$1" . ; }
