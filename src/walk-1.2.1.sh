@@ -176,6 +176,13 @@ determine_archive_type () {
 	fi
 }
 
+# find_root() finds all files and directories below the currect directory, including the directory itself.
+# find_all() finds all files and directories below the currect directory, excluding the start directory's "." entry.
+# find_flat() finds all files and directories immediately below the current directory (no recursion), excluding the start directory's "." entry.
+find_root () { find . "$@" -print0 ; }
+find_all  () { find_root -mindepth 1 "$@" ; }
+find_flat () { find_all -maxdepth 1 "$@" ; }
+
 archvtype () {
 	local filetype=
 	if [ -e "$archv" ]; then
@@ -208,19 +215,22 @@ archvtype () {
 			fn_pack   () { rar u $raropt "$1" . ; }
 			;;
 		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
+			export UNZIP=
+			export ZIP=
+			export ZIPOPT=
 			zipopt="-v"
-			fn_unpack () { UNZIP=       unzip -o -X    $zipopt "$1"   ; }
-			fn_pack   () { ZIP= ZIPOPT= zip   -u -y -r $zipopt "$1" . ; }
+			fn_unpack () { unzip -o -X    $zipopt "$1"   ; }
+			fn_pack   () { zip   -u -y -r $zipopt "$1" . ; }
 			;;
 		*"cpio archive"*|"X-"*".cpio")
 			cpioopt="-v -B -F"
-			fn_unpack () { cpio -i -d --no-absolute-filenames --sparse    $cpioopt "$1" ; }
-			fn_pack   () { find . -print0 -mindepth 1 | cpio -0 -o -H crc $cpioopt "$1" ; }
+			fn_unpack () { cpio -i -d --no-absolute-filenames --sparse $cpioopt "$1" ; }
+			fn_pack   () { find_root | cpio -0 -o -H crc               $cpioopt "$1" ; }
 			;;
 		*" ar archive"*|"X-"*".a")
 			aropt="sv"
-			fn_unpack () { ar x${aropt} "$1" ; }
-			fn_pack   () { find . -mindepth 1 | xargs ar r${aropt} "$1" ; }
+			fn_unpack () {                              ar x${aropt} "$1" ; }
+			fn_pack   () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
 			;;
 		*)
 			return 1
