@@ -1,9 +1,16 @@
+v2.0 (April 2016)
+	- Added -y option
+	- Added -A option
+	- Fixed .zip re-packing
+	- Fixed .7z, .rar, .a unpacking
+	- Cleanup of archiver options
+
 v1.2.1 (January 2015)
 	- Added .jar support
 	- Fixed .tar creation
 
 v1.2 (January 2015)
-	- New -c argument allows creating empty archives
+	- New -c option allows creating empty archives
 	- Fixed relative directory handling
 	- Removed bash dependency
 

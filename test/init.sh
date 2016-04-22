@@ -4,7 +4,7 @@ set -e  # fail on errors
 THIS="$(readlink -f -- "$0")"
 TESTNAME="$(basename --suffix='.sh' -- "$THIS")"
 HERE="$(dirname -- "$THIS")"
-WALK="$(readlink -f -- "$HERE/../src/walk-1.2.1.sh")"
+WALK="$(readlink -f -- "$HERE/../src/walk-2.0.sh")"
 
 export ASSERTSH="$HERE/assert.sh"  # The assertion functions script. The subshell might need them itself.
 export ERRCOND="$HERE/errcond-$TESTNAME"  # Flag file. Should not exist yet. Can be created by a subshell script to signal an error.
