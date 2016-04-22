@@ -210,7 +210,7 @@ archvtype () {
 		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
 			zipopt="-v"
 			fn_unpack () { UNZIP=       unzip -o -X    $zipopt "$1"   ; }
-			fn_pack   () { ZIP= ZIPOPT= zip   -u -y -R $zipopt "$1" . ; }
+			fn_pack   () { ZIP= ZIPOPT= zip   -u -y -r $zipopt "$1" . ; }
 			;;
 		*"cpio archive"*|"X-"*".cpio")
 			cpioopt="-v -B -F"
