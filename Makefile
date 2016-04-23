@@ -1,4 +1,4 @@
-.PHONY : all install clean
+.PHONY : all install clean test
 
 BIN=walk
 DEST=/usr/local/bin/$(BIN)
@@ -6,6 +6,9 @@ CHOWN=root:root
 
 all:
 clean:
+
+test:
+	cd test/ && for test in ??-test-*.sh; do ./$$test; done
 
 install:
 	mkdir -p /usr/local/share/man/man1
