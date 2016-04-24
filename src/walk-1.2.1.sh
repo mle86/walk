@@ -150,9 +150,21 @@ enter_tempdir () {
 	msg "shell terminated."
 }
 
+fn_delete () {
+	# Default function.
+	# Many archiver programs won't completely overwrite existing archives,
+	# but will instead try to update them, often incorrectly.
+	# In this case, it's better to simply delete and completely re-create the archive.
+	rm -- "$1"
+	# Overwrite this function with an empty dummy function
+	# for archivers which will happily overwrite existing archives (like tar)
+	# or which can update existing archives correctly.
+}
+
 repack_archive () {
 	if ask "Recreate archive $archv ? [Y/n]" y; then
 		msg "recreating archive"
+		fn_delete "$usearchv"
 		if [ "$pack_root" ]; then
 			fn_packroot "$usearchv"
 		else
@@ -230,6 +242,7 @@ archvtype () {
 			local taropt_bzip2='-j'
 			local taropt_xz='-J'
 			tartype "$filetype" || return 2
+			fn_delete   () { :; }  # not necessary, tar will overwrite the archive
 			fn_unpack   () {             tar -x $taropt $taropt_extract -f "$1"             ; }
 			fn_packroot () {             tar -c $taropt                 -f "$1" .           ; }
 			fn_pack     () { find_flat | tar -c $taropt                 -f "$1" --null -T - ; }
@@ -243,20 +256,23 @@ archvtype () {
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r0 -tl"
 			fn_unpack   () { rar x $raropt "$1"   ; }
-			fn_packroot () { rar u $raropt "$1" . ; }
-			fn_pack     () { rar u $raropt "$1" . ; }
+			fn_packroot () { rar a $raropt "$1" . ; }
+			fn_pack     () { rar a $raropt "$1" . ; }
 			;;
 		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
 			export UNZIP=
 			export ZIP=
 			export ZIPOPT=
-			zipopt="-v"
-			fn_unpack   () { unzip -X       $zipopt "$1"   ; }
-			fn_packroot () { zip   -u -y -r $zipopt "$1" . ; }
-			fn_pack     () { zip   -u -y -r $zipopt "$1" . ; }
+			zipopt=""
+			fn_unpack   () { unzip -X    $zipopt "$1"   ; }
+			fn_packroot () { zip   -y -r $zipopt "$1" . ; }
+			fn_pack     () { zip   -y -r $zipopt "$1" . ; }
+			# Updating archives with the --filesync mode would be faster,
+			# but Info-ZIP v3.0 does not consider changed file access modes update-worthy.
 			;;
 		*"cpio archive"*|"X-"*".cpio")
 			cpioopt="-v -B -F"
+			fn_delete   () { :; }  # not necessary, cpio will overwrite the archive
 			fn_unpack   () { cpio -i -d --no-absolute-filenames --sparse $cpioopt "$1" ; }
 			fn_packroot () { find_root | cpio -0 -o -H crc               $cpioopt "$1" ; }
 			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt "$1" ; }
