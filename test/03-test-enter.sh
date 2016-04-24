@@ -2,6 +2,7 @@
 . $(dirname "$0")/init.sh
 
 # This test script tries to enter an existing .tar archive, verifying the extracted file contents.
+# It also checks if walk changed the archive contents after re-packing it (it shouldn't).
 
 ARCHIVE='test.tar'
 
@@ -17,7 +18,7 @@ cd_tmpdir
  echo "echo yo"   >> executable-file
  chmod 0755 executable-file
 
- archive_files='b-file empty-file .writable-file executable-file'
+ archive_files='./b-file ./empty-file ./.writable-file ./executable-file'
  tar -cf $ARCHIVE $archive_files
  rm -f $archive_files
 
@@ -38,7 +39,13 @@ prepare_subshell <<SH
  assertCmdEq    "./executable-file"           "yo"    "executable-file did not run correctly!"
 SH
 
+contents1="$(tar -tvf $ARCHIVE | tarsort)"
+
 assertCmd "$WALK -y $ARCHIVE"
+
+contents2="$(tar -tvf $ARCHIVE | tarsort)"
+
+assertEq "$contents2" "$contents1" "walk changed the archive contents for no good reason!"
 
 success
 

@@ -66,3 +66,10 @@ cleanup () {
 	[ -n "$DIR"     -a -d "$DIR"     ] && rm --one-file-system -vd "$DIR"
 }
 
+tarsort () {
+	# Sorts the input (tar -tv) by filenames.
+	# Expected format:
+	#  -rw-r--r-- mle/mle           0 2016-04-24 22:17 ./filename
+	sort -k 6
+}
+
