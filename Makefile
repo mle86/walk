@@ -8,7 +8,7 @@ all:
 clean:
 
 test:
-	cd test/ && for test in ??-test-*.sh; do ./$$test; done
+	test/run-all-tests.sh
 
 install:
 	mkdir -p /usr/local/share/man/man1
