@@ -111,3 +111,21 @@ assertCmdEmpty () {
 	assertCmdEq "$cmd" "$expectedReturnStatus" "" "$errorMessage"
 }
 
+assertFileSize () {
+	# assertFileSize fileName expectedSize [errorMessage]
+	local fileName="$1"
+	local expectedSize="$2"
+	local errorMessage="${3:-"File '$fileName' has wrong size!"}"
+
+	assertCmdEq "stat --format='%s' '$fileName'" "$expectedSize" "$errorMessage"
+}
+
+assertFileMode () {
+	# assertFileMode fileName expectedOctalMode [errorMessage]
+	local fileName="$1"
+	local expectedOctalMode="$2"
+	local errorMessage="${3:-"File '$fileName' has wrong access mode!"}"
+
+	assertCmdEq "stat --format='%a' '$fileName'" "$expectedOctalMode" "$errorMessage"
+}
+

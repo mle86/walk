@@ -32,11 +32,11 @@ prepare_subshell <<SH
  [ -f executable-file ] || fail "executable-file was not unpacked!"
  [ -x executable-file ] || fail "executable-file is not executable!"
 
- assertCmdEmpty "cat empty-file"                      "empty-file is not empty!"
- assertCmdEq    "cat b-file"                  "bBbBb" "b-file has incorrect contents!"
- assertCmdEq    "stat -c '%a' empty-file"     "400"   "empty-file was unpacked with wrong access mode!"
- assertCmdEq    "stat -c '%a' .writable-file" "666"   ".writable-file was unpacked with wrong access mode!"
- assertCmdEq    "./executable-file"           "yo"    "executable-file did not run correctly!"
+ assertCmdEmpty "cat empty-file"            "empty-file is not empty!"
+ assertCmdEq    "cat b-file"        "bBbBb" "b-file has incorrect contents!"
+ assertFileMode "empty-file"        "400"   "empty-file was unpacked with wrong access mode!"
+ assertFileMode ".writable-file"    "666"   ".writable-file was unpacked with wrong access mode!"
+ assertCmdEq    "./executable-file" "yo"    "executable-file did not run correctly!"
 SH
 
 contents1="$(tar -tvf $ARCHIVE | tarsort)"
