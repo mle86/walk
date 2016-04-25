@@ -278,7 +278,7 @@ archvtype () {
 			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt "$1" ; }
 			;;
 		*" ar archive"*|"X-"*".a")
-			aropt="sv"
+			aropt="svoP"
 			fn_unpack   () {                              ar x${aropt} "$1" ; }
 			fn_packroot () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
 			fn_pack     () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
