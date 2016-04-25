@@ -14,7 +14,9 @@ DIR=  # Current temporary working directory. Should be deleted by cleanup() late
 TMPSH=  # The subshell to run inside 'walk' instead of bash.
 ARCHIVE=  # The archive filename which was created/entered.
 IN_SUBSHELL=  # Will be set to 'yes' for subshells by prepare_subshell().
-CLEANUP_FILES=  # Additional files to delete. Separate with spaces. Be careful, they'll be deleted with "rm -f".
+CLEANUP_FILES=  # Additional files and empty directories to delete. Separate with spaces. Be careful, they'll be deleted with "rm -fd".
+STDFILES=  # Files and top directories prepared for the standard archive.
+RMSTDFILES=  # All files and directories prepared for the standard archive. Suitable for "rm -fd".
 
 # Code duplication: this block of constants is copied from walk.sh.
 EXIT_SYNTAX=1
@@ -62,7 +64,7 @@ cleanup () {
 	[ -n "$TMPSH"   -a -f "$TMPSH"   ] && rm --one-file-system -v "$TMPSH"
 	[ -n "$ARCHIVE" -a -f "$ARCHIVE" ] && rm --one-file-system -v "$(readlink -f "$ARCHIVE")"
 	[ -n "$ERRCOND" -a -f "$ERRCOND" ] && rm --one-file-system -v "$ERRCOND"
-	[ -n "$CLEANUP_FILES"            ] && rm --one-file-system -vf $CLEANUP_FILES
+	[ -n "$CLEANUP_FILES"            ] && rm --one-file-system -vfd $CLEANUP_FILES
 	[ -n "$DIR"     -a -d "$DIR"     ] && rm --one-file-system -vd "$DIR"
 }
 
@@ -71,5 +73,27 @@ tarsort () {
 	# Expected format:
 	#  -rw-r--r-- mle/mle           0 2016-04-24 22:17 ./filename
 	sort -k 6
+}
+
+prepare_standard_archive () {
+	local old_umask=$(umask)
+
+	> empty-file
+	umask 0022
+	echo HIDDEN     > .hidden-file
+	echo TEST       > test-file
+	echo PROTECTED  > protected-file  ; chmod 0600 protected-file
+	echo EXECUTABLE > executable-file ; chmod 0755 executable-file
+	mkdir -p subdir/emptysubdir/
+	echo SUBFILE > subdir/subfile
+
+	umask $old_umask
+	STDFILES='./empty-file ./test-file ./.hidden-file ./protected-file ./executable-file ./subdir/'
+	RMSTDFILES="./subdir/subfile ./subdir/emptysubdir/ ./subdir/subfile2 $STDFILES"
+	CLEANUP_FILES="$CLEANUP_FILES $RMSTDFILES"
+}
+
+delete_standard_archive_files () {
+	rm -fd $RMSTDFILES
 }
 
