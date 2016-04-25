@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e  # fail on errors
 
-THIS="$(readlink -f "$0")"
-TESTNAME="$(basename --suffix='.sh' "$THIS")"
-HERE="$(dirname "$THIS")"
-WALK="$(readlink -f "$HERE/../src/walk-1.2.1.sh")"
+THIS="$(readlink -f -- "$0")"
+TESTNAME="$(basename --suffix='.sh' -- "$THIS")"
+HERE="$(dirname -- "$THIS")"
+WALK="$(readlink -f -- "$HERE/../src/walk-1.2.1.sh")"
 
 export ASSERTSH="$HERE/assert.sh"  # The assertion functions script. The subshell might need them itself.
 export ERRCOND="$HERE/errcond-$TESTNAME"  # Flag file. Should not exist yet. Can be created by a subshell script to signal an error.
@@ -26,7 +26,7 @@ EXIT_NOTAFILE=4
 EXIT_EXISTS=2
 EXIT_UNKNOWNTYPE=3
 
-rm -f "$ERRCOND"  # this may have been left over from an earlier, broken test 
+rm -f -- "$ERRCOND"  # this may have been left over from an earlier, broken test 
 
 # Load assertion and error functions.
 # This must be done prior to our cleanup() definition, or it will be overwritten.
@@ -40,7 +40,7 @@ cd_tmpdir () {
 	# so we don't clutter the test root with them.
 	DIR="$(mktemp -d)"
 	export ERRCOND="$DIR/errcond-$TESTNAME"
-	cd "$DIR"
+	cd -- "$DIR"
 }
 
 prepare_subshell () {
@@ -61,11 +61,11 @@ success () {
 }
 
 cleanup () {
-	[ -n "$TMPSH"   -a -f "$TMPSH"   ] && rm --one-file-system -v "$TMPSH"
-	[ -n "$ARCHIVE" -a -f "$ARCHIVE" ] && rm --one-file-system -v "$(readlink -f "$ARCHIVE")"
-	[ -n "$ERRCOND" -a -f "$ERRCOND" ] && rm --one-file-system -v "$ERRCOND"
-	[ -n "$CLEANUP_FILES"            ] && rm --one-file-system -vfd $CLEANUP_FILES
-	[ -n "$DIR"     -a -d "$DIR"     ] && rm --one-file-system -vd "$DIR"
+	[ -n "$TMPSH"   -a -f "$TMPSH"   ] && rm --one-file-system -v   -- "$TMPSH"
+	[ -n "$ARCHIVE" -a -f "$ARCHIVE" ] && rm --one-file-system -v   -- "$(readlink -f -- "$ARCHIVE")"
+	[ -n "$ERRCOND" -a -f "$ERRCOND" ] && rm --one-file-system -v   -- "$ERRCOND"
+	[ -n "$CLEANUP_FILES"            ] && rm --one-file-system -vfd -- $CLEANUP_FILES
+	[ -n "$DIR"     -a -d "$DIR"     ] && rm --one-file-system -vd  -- "$DIR"
 }
 
 tarsort () {
@@ -94,6 +94,6 @@ prepare_standard_archive () {
 }
 
 delete_standard_archive_files () {
-	rm -fd $RMSTDFILES
+	rm -fd -- $RMSTDFILES
 }
 

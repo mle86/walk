@@ -20,7 +20,7 @@
 #  along with walk.  If not, see <http://www.gnu.org/licenses/>.
 
 
-prog="$(basename "$0")"
+prog="$(basename -- "$0")"
 errprefix="$prog: "
 msgprefix="$prog: "
 
@@ -108,8 +108,8 @@ if [ -z "$1" ]; then
 	fail $EXIT_SYNTAX "$syntaxline"
 fi
 
-archv="$(readlink -f "$1")"  # absolute path
-temp="$(dirname "$archv")/.$(basename "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
+archv="$(readlink -f -- "$1")"  # absolute path
+temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
 
 if [ ! -e "$archv" -a -z "$create_empty" ]; then
 	err "$archv not found"
@@ -129,7 +129,7 @@ usearchv="$temp"
 
 unpack_archive () {
 	# Rename archive file
-	mv "$archv" "$temp"
+	mv -- "$archv" "$temp"
 
 	# Unpack archive into new working dir of same name
 	create_working_dir "$archv"
@@ -139,8 +139,8 @@ unpack_archive () {
 create_working_dir () {
 	# Don't set any special modes -- it'll depend on the user's umask.
 	# If the unpacked archive contains a '.' entry, that will overwrite the mode anyway. 
-	mkdir "$1"
-	cd "$1"
+	mkdir -- "$1"
+	cd -- "$1"
 }
 
 enter_tempdir () {
@@ -176,13 +176,13 @@ repack_archive () {
 cleanup () {
 	if ask "Delete temporary directory? [Y/n]" y; then
 		msg "deleting temp dir"
-		rm -rf "$archv"
+		rm -rf -- "$archv"
 	else
 		save="${archv}-$(date +'%Y%m%d-%H%M')"
 		msg "renaming temp dir to $save"
-		mv "$archv" "$save"
+		mv -- "$archv" "$save"
 	fi
-	mv "$temp" "$archv"
+	mv -- "$temp" "$archv"
 }
 
 tartype () {
@@ -228,7 +228,7 @@ archvtype () {
 	local filetype=
 	if [ -e "$archv" ]; then
 		# File exists, try to determine type using 'file' tool
-		filetype="$(file -Nbz "$archv" 2>/dev/null | tr '[A-Z]' '[a-z]')" || return 1
+		filetype="$(file -Nbz -- "$archv" 2>/dev/null | tr '[A-Z]' '[a-z]')" || return 1
 	else
 		# File does not yet exist -- try to guess type from filename itself
 		filetype="X-${archv}"
