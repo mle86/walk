@@ -25,6 +25,8 @@ EXIT_NOTFOUND=5
 EXIT_NOTAFILE=4
 EXIT_EXISTS=2
 EXIT_UNKNOWNTYPE=3
+EXIT_PACKFAIL=6
+EXIT_UNPACKFAIL=7
 
 rm -f -- "$ERRCOND"  # this may have been left over from an earlier, broken test 
 

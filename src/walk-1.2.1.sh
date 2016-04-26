@@ -34,6 +34,8 @@ EXIT_NOTFOUND=5
 EXIT_NOTAFILE=4
 EXIT_EXISTS=2
 EXIT_UNKNOWNTYPE=3
+EXIT_PACKFAIL=6
+EXIT_UNPACKFAIL=7
 
 msg  () { echo "$msgprefix$@" ; }
 err  () { echo "$errprefix$@" >&2 ; }
@@ -133,7 +135,19 @@ unpack_archive () {
 
 	# Unpack archive into new working dir of same name
 	create_working_dir "$archv"
+
+	# Extract archive there
 	fn_unpack "$usearchv"
+	local status="$?"
+
+	if [ "$status" -ne 0 ]; then
+		# Restore archive file, remove empty working directory
+		err "Unpacking failed (status $status)."
+		cd -- "$(dirname -- "$archv")"
+		rmdir -- "$archv"
+		mv -- "$temp" "$archv"
+		exit $EXIT_UNPACKFAIL
+	fi
 }
 
 create_working_dir () {
@@ -167,8 +181,17 @@ repack_archive () {
 		fn_delete "$usearchv"
 		if [ "$pack_root" ]; then
 			fn_packroot "$usearchv"
+			local status="$?"
 		else
 			fn_pack "$usearchv"
+			local status="$?"
+		fi
+
+		if [ "$status" -ne 0 ]; then
+			rm -f "$usearchv"
+			err "Repacking failed (status $status)."
+			err "Working directory kept: $archv"
+			exit $EXIT_PACKFAIL
 		fi
 	fi
 }
