@@ -6,7 +6,7 @@ walk \- enter and manipulate archive files like directories
 \fBwalk\fR
 [\fB-cyA\fR]
 [\fB--\fR]
-\fBARCHIVE\fR
+\fIARCHIVE\fR
 .SH DESCRIPTION
 \fBwalk\fR is a shell tool
 which allows you to treat archive files as directories.
@@ -21,9 +21,10 @@ This way, you can interactively edit an existing archive,
 examine its content, add files to it
 and whatever else you wish to do with its contents.
 
-If \fBwalk\fR is invoked on a non-existing filename or a non-file name,
+If \fBwalk\fR is invoked on a non-existing filename or a non-file name
+without the \fB-c\fR option,
 it will print an error and exit.
-By supplying the \fB-c\fR option, \fBwalk\fR will accept non-existing filenames
+With the \fB-c\fR option, \fBwalk\fR will accept non-existing filenames
 and create a new, empty archive with that name.
 This can be used to create new archives from scratch.
 .SH SUPPORTED FILE TYPES
@@ -37,13 +38,13 @@ tar, compressed with gzip/bzip2/xz
 i.e. the -zjJ options)
 .IP - 2
 7-zip
-(requires the \fB7zr\fR binary)
+(requires \fB7zr\fR binary)
 .IP - 2
 zip, jar
-(requires Info-ZIP compatible \fBzip\fR and \fBunzip\fR binaries)
+(requires \fBzip\fR and \fBunzip\fR binaries)
 .IP - 2
 rar
-(requires A.Roshal's \fBrar\fR binary)
+(requires \fBrar\fR binary)
 .IP - 2
 cpio
 (requires the GNU \fBcpio\fR binary)
@@ -65,11 +66,11 @@ These extensions are recognized:
  .zip/.jar,
  .rar,
  .cpio,
- .a (for \fBar\fR archives)
+ .a
 .SH OPTIONS
 .TP
 .B -c
-Create non-existing \fBARCHIVE\fRs
+Create non-existing \fIARCHIVE\fRs
 instead of exiting with an error.
 .TP
 .B -y
@@ -141,5 +142,7 @@ mle@box:~$ \fBtar tzvf test.tgz\fR
  -rw-r--r-- mle/users       300 2010-09-28 02:45:28 ./subdir/a1
  -rw-r--r-- mle/users       500 2010-09-28 02:45:35 ./subdir/a3
 .fi
+.SH LICENSE
+GNU GPL v3
 .SH AUTHOR
 Maximilian Eul <mle AT multinion.de>
