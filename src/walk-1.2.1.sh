@@ -1,5 +1,5 @@
 #!/bin/sh
-#set -e
+set -e
 
 #  walk v1.2.1
 #  
