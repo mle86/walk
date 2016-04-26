@@ -10,6 +10,9 @@ clean:
 test:
 	test/run-all-tests.sh
 
+README.md: man/*
+	perl man/to-readme.pl <man/walk.1 >README.md
+
 install:
 	mkdir -p /usr/local/share/man/man1
 	
