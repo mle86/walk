@@ -29,8 +29,8 @@ SH
 
 	# Don't use assertCmd() here, it might not handle special characters correctly.
 	# So we'll call walk manually, which also means we'll have to check the errcond file ourselves.
-	$WALK -y "$ARCHIVE" || fail "Command failed: walk '$ARCHIVE'"
-	[ ! -e "$ERRCOND" ] || fail "Command failed: walk '$ARCHIVE'"
+	$WALK -y -- "$ARCHIVE" || fail "Command failed: walk '$ARCHIVE'"
+	[ ! -e "$ERRCOND" ]    || fail "Command failed: walk '$ARCHIVE'"
 
 	[ -e "$ARCHIVE" ] || fail "Archive does not exist anymore after calling walk: '$ARCHIVE'"
 }

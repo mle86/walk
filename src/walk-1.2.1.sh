@@ -68,9 +68,8 @@ ask () {
 }
 
 
-# Check arguments
-syntaxline="syntax: $prog [-c] [-y] [-A] ARCHIVE "
-if [ "$1" = "-h" -o "$1" = "--help" ]; then
+syntaxline="syntax: $prog [-cyA] ARCHIVE "
+help () {
 	echo "$syntaxline"
 	echo ""
 	echo "walk v1.2.1 will unpack an archive file into a new directory of the"
@@ -91,26 +90,40 @@ if [ "$1" = "-h" -o "$1" = "--help" ]; then
 	echo " - rar (requires rar)"
 	echo " - cpio, ar"
 	echo ""
-	exit $EXIT_HELP
-fi
-if [ "$1" = "-c" ]; then
-	create_empty=yes
-	shift
-fi
-if [ "$1" = "-y" ]; then
-	force_answer=yes
-	shift
-fi
-if [ "$1" = "-A" ]; then
-	pack_root=yes
-	shift
-fi
-if [ -z "$1" ]; then
-	errprefix=
-	fail $EXIT_SYNTAX "$syntaxline"
-fi
+	exit ${1:-$EXIT_HELP}
+}
 
-archv="$(readlink -f -- "$1")"  # absolute path
+read_arguments () {
+	for arg in "$@"; do
+		# find the '--help' long option, but not after '--'
+		[ "$arg" = "--help" ] && help
+		[ "$arg" = "--"     ] && break
+	done
+
+	while getopts 'cyAh' opt; do case "$opt" in
+		c)	create_empty=yes ;;
+		y)	force_answer=yes ;;
+		A)	pack_root=yes ;;
+		h)	help ;;
+		--)	;;
+		*)	exit $EXIT_SYNTAX ;;
+	esac ; done
+	shift "$(($OPTIND - 1))"
+
+	if [ -z "$1" ]; then
+		# missing filename argument
+		errprefix=
+		fail $EXIT_SYNTAX "$syntaxline"
+	fi
+	[ -z "$2" ] || fail $EXIT_SYNTAX "more than one filename given"
+
+	archv="$1"
+}
+read_arguments "$@"
+
+#####################################################################
+
+archv="$(readlink -f -- "$archv")"  # get absolute path to archive
 temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
 
 if [ ! -e "$archv" -a -z "$create_empty" ]; then
