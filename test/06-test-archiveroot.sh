@@ -35,7 +35,7 @@ expectedContents="$(echo -e "./\n./testfile")"
 assertCmdEq "tar -tf $ARCHIVE" "$expectedContents" "Re-packed archive contents mismatch when using -A option!"
 
 assertFileMode "." "755"
-tar -xf $ARCHIVE .
+tar --same-permissions -xf $ARCHIVE .
 assertFileMode "." "700" "Unpacking an archive containing a root directory entry did not actually change the directory's access mode!"
 
 success

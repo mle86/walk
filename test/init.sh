@@ -10,6 +10,8 @@ export ASSERTSH="$HERE/assert.sh"  # The assertion functions script. The subshel
 export ERRCOND="$HERE/errcond-$TESTNAME"  # Flag file. Should not exist yet. Can be created by a subshell script to signal an error.
 export SHELL="true"  # Don't run a real subshell by default. Can be changed via prepare_subshell().
 
+umask 0022
+
 DIR=  # Current temporary working directory. Should be deleted by cleanup() later.
 TMPSH=  # The subshell to run inside 'walk' instead of bash.
 ARCHIVE=  # The archive filename which was created/entered.
@@ -78,10 +80,7 @@ tarsort () {
 }
 
 prepare_standard_archive () {
-	local old_umask=$(umask)
-
 	> empty-file
-	umask 0022
 	echo HIDDEN     > .hidden-file
 	echo TEST       > test-file
 	echo PROTECTED  > protected-file  ; chmod 0600 protected-file
@@ -89,7 +88,6 @@ prepare_standard_archive () {
 	mkdir -p subdir/emptysubdir/
 	echo SUBFILE > subdir/subfile
 
-	umask $old_umask
 	STDFILES='./empty-file ./test-file ./.hidden-file ./protected-file ./executable-file ./subdir/'
 	RMSTDFILES="./subdir/subfile ./subdir/emptysubdir/ ./subdir/subfile2 $STDFILES"
 	CLEANUP_FILES="$CLEANUP_FILES $RMSTDFILES"

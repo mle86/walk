@@ -29,7 +29,7 @@ SH
 assertCmd "$WALK -y $ARCHIVE"
 
 # Unpack altered archive, verify changes:
-tar -xf $ARCHIVE
+tar --same-permissions -xf $ARCHIVE
 CLEANUP_FILES="$archive_files ./.zog-file"
 
 [ ! -f foo-file ] || fail "foo-file was deleted, but is still in the archive!"

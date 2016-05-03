@@ -15,7 +15,7 @@ SH
 
 assertCmd "$WALK -y $ARCHIVE"
 
-tar -xjf $ARCHIVE
+tar --same-permissions -xjf $ARCHIVE
 verify_modified_standard_archive
 
 success

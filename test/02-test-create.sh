@@ -7,7 +7,6 @@ ARCHIVE='test.tgz'
 
 cd_tmpdir
 prepare_subshell <<SH
- umask 0022
  > empty-file
  echo AAaa > aaaa-file
  dd if=/dev/urandom of=random-file bs=1024 count=1
@@ -26,7 +25,7 @@ CLEANUP_FILES='./aaaa-file ./empty-file ./random-file'
 # Archive seems to contain the correct files, and only the correct files.
 
 # Now verify the file contents:
-tar -xzf $ARCHIVE
+tar --same-permissions -xzf $ARCHIVE
 assertCmdEmpty "cat ./empty-file"        "empty-file is not empty!"
 assertCmdEq    "cat ./aaaa-file"  "AAaa" "aaaa-file has wrong contents!"
 assertFileSize "./random-file"    1024   "random-file has wrong size!"

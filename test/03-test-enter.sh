@@ -8,7 +8,6 @@ ARCHIVE='test.tar'
 
 cd_tmpdir
 
- umask 0022
  echo bBbBb > b-file
  > empty-file
  chmod 0400 empty-file
