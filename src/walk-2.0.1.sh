@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-#  walk v2.0
+#  walk v2.0.1
 #  
 #  Copyright (C) 2016  Maximilian L. Eul
 #  This file is part of walk.
@@ -72,7 +72,7 @@ syntaxline="syntax: $prog [-cyA] ARCHIVE "
 help () {
 	echo "$syntaxline"
 	echo ""
-	echo "walk v2.0 will unpack an archive file into a new directory of the"
+	echo "walk v2.0.1 will unpack an archive file into a new directory of the"
 	echo "same name and spawn a new shell within that directory. After said"
 	echo "shell terminates, walk will ask you whether you want to re-create"
 	echo "the archive from that directory and whether you want to delete the"

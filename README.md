@@ -2,7 +2,7 @@
 
 # walk(1) - enter and manipulate archive files like directories
 
-Version 2.0, April 2016
+Version 2.0.1, May 2016
 
 ```walk [-cyA] [--] ARCHIVE```
 
