@@ -10,7 +10,7 @@ cd_tmpdir
  chmod 0755 .
  echo aAaAa > testfile
  tar -cf $ARCHIVE testfile
- CLEANUP_FILES='testfile'
+ add_cleanup testfile
  rm -f testfile
 
 prepare_subshell <<SH

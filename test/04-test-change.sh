@@ -30,7 +30,7 @@ assertCmd "$WALK -y $ARCHIVE"
 
 # Unpack altered archive, verify changes:
 tar --same-permissions -xf $ARCHIVE
-CLEANUP_FILES="$archive_files ./.zog-file"
+add_cleanup $archive_files ./.zog-file
 
 [ ! -f foo-file ] || fail "foo-file was deleted, but is still in the archive!"
 [   -f .zog-file ] || fail ".zog-file was created, but is not in the archive!"

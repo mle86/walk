@@ -21,7 +21,7 @@ assertCmd "$WALK -c -y $ARCHIVE"
 
 expectedList="$(echo -e "./aaaa-file\n./empty-file\n./random-file")"
 assertCmdEq "tar -tzf $ARCHIVE | sort" "$expectedList" "Archive was created, but has wrong contents!"
-CLEANUP_FILES='./aaaa-file ./empty-file ./random-file'
+add_cleanup ./aaaa-file ./empty-file ./random-file
 # Archive seems to contain the correct files, and only the correct files.
 
 # Now verify the file contents:
