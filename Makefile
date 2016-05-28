@@ -8,6 +8,7 @@ all:
 clean:
 
 test:
+	git submodule update --init test/framework/
 	test/run-all-tests.sh
 
 README.md: man/*
