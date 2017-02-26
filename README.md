@@ -39,7 +39,7 @@ and the man page to /usr/local/share/man/man.1/**walk.1.gz**.
 
 # Supported file types
 
-**walk** uses the **file** tool to determine the archive file type.
+**walk** uses the **file**(1) tool to determine the archive file type.
 Currently, it supports handling these file types:
 
 * tar
@@ -64,11 +64,11 @@ In this case, the type is guessed from the filename extension.
 These extensions are recognized:
 
  .tar,
- .tar.gz/.tgz,
- .tar.bz/.tbz/tar.bz2/.tbz2,
- .tar.xz/.txz,
+ .tar.gz, .tgz,
+ .tar.bz, .tbz, tar.bz2, .tbz2,
+ .tar.xz, .txz,
  .7z,
- .zip/.jar,
+ .zip, .jar,
  .rar,
  .cpio,
  .a

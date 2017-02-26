@@ -28,7 +28,7 @@ With the \fB-c\fR option, \fBwalk\fR will accept non-existing filenames
 and create a new, empty archive with that name.
 This can be used to create new archives from scratch.
 .SH SUPPORTED FILE TYPES
-\fBwalk\fR uses the \fBfile\fR tool to determine the archive file type.
+\fBwalk\fR uses the \fBfile\fR(1) tool to determine the archive file type.
 Currently, it supports handling these file types:
 .IP - 2
 tar
@@ -59,11 +59,11 @@ In this case, the type is guessed from the filename extension.
 These extensions are recognized:
 
  .tar,
- .tar.gz/.tgz,
- .tar.bz/.tbz/tar.bz2/.tbz2,
- .tar.xz/.txz,
+ .tar.gz, .tgz,
+ .tar.bz, .tbz, tar.bz2, .tbz2,
+ .tar.xz, .txz,
  .7z,
- .zip/.jar,
+ .zip, .jar,
  .rar,
  .cpio,
  .a
