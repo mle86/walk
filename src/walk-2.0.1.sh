@@ -66,6 +66,31 @@ ask () {
 	fi
 	[ "$response" = "y" -o "$response" = "Y" -o "$response" = "yes" -o "$response" = "Yes" ]  # is "yes"-like?
 }
+expect () {
+	# expect STATUS_LIST COMMAND...
+	#  Will execute COMMAND.
+	#  If the exit status is within the STATUS_LIST, success (0) is returned.
+	#  If the exit status is NOT within the STATUS_LIST, a failure status is returned (either the original status or 1, whichever is greater).
+	#  STATUS_LIST should be a space-separated list of allowed exit status values.
+	#  Example:  expect "0 1" unzip -X archive.zip
+	#            This will return success if the unzip command returned either 0 or 1,
+	#            but return any other failure status unchanged.
+	local status_list="$1" ; shift
+
+	local status=0
+	( "$@" ) || status=$?
+
+	case " $status_list " in
+		*" $status "*)
+			# ok, it's an allowed status
+			return 0
+			;;
+		*)
+			# failure
+			[ "$status" -eq 0 ] && return 1
+			return $status
+	esac
+}
 
 
 syntaxline="syntax: $prog [-cyA] ARCHIVE "
@@ -315,8 +340,8 @@ archvtype () {
 			export ZIP=
 			export ZIPOPT=
 			zipopt=""
-			fn_unpack   () { unzip -X    $zipopt "$1"   ; }
-			fn_pack     () { zip   -y -r $zipopt "$1" . ; }
+			fn_unpack   () { expect "0 1" unzip -X    $zipopt "$1"   ; }
+			fn_pack     () {              zip   -y -r $zipopt "$1" . ; }
 			# Updating archives with the --filesync mode would be faster,
 			# but Info-ZIP v3.0 does not consider changed file access modes update-worthy.
 			;;
