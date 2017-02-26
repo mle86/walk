@@ -123,9 +123,6 @@ read_arguments "$@"
 
 #####################################################################
 
-archv="$(readlink -f -- "$archv")"  # get absolute path to archive
-temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
-
 if [ ! -e "$archv" -a -z "$create_empty" ]; then
 	err "$archv not found"
 	err "Do you want to create an empty archive? Use the -c option"
@@ -134,6 +131,11 @@ fi
 if [ -e "$archv" -a ! -f "$archv" ]; then
 	fail $EXIT_NOTAFILE "$archv is not a file"
 fi
+
+
+archv="$(readlink -f -- "$archv")"  # get absolute path to archive
+temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
+
 if [ -e "$temp" ]; then
 	fail $EXIT_EXISTS "File or folder $temp already exists!"
 fi

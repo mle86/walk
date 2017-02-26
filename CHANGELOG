@@ -1,5 +1,6 @@
 next
 	- Delete incompletely unpacked directories on unpacking errors
+	- Correct error message for non-existing archives
 
 v2.0.1 (May 2016)
 	- Repo cleanup
