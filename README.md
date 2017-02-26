@@ -93,6 +93,19 @@ These extensions are recognized:
   by the archiver program,
   so use this option with caution.
 
+# Notes
+
+Beware that some archive types have their own idiosyncracies
+concerning file ownership:
+
+* **tar**, **zip**, and **cpio** archives
+  can store file owner informations.
+  When **walk** is run as non-root,
+  the owner informations are silently discarded.
+* **a** archives (**ar**(1)) can store owner informations,
+  but will always discard them on unpacking.
+* **7r** and **rar** archives don't store owner informations.
+
 # Example
 
 

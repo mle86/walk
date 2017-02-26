@@ -88,6 +88,19 @@ Unpacking archives which contain the \fB.\fR directory entry
 can cause the current directory's owner and/or mode to be changed
 by the archiver program,
 so use this option with caution.
+.SH NOTES
+Beware that some archive types have their own idiosyncracies
+concerning file ownership:
+.IP - 2
+\fBtar\fR, \fBzip\fR, and \fBcpio\fR archives
+can store file owner informations.
+When \fBwalk\fR is run as non-root,
+the owner informations are silently discarded.
+.IP - 2
+\fBa\fR archives (\fBar\fR(1)) can store owner informations,
+but will always discard them on unpacking.
+.IP - 2
+\fB7r\fR and \fBrar\fR archives don't store owner informations.
 .SH EXAMPLE
 
 .nf
