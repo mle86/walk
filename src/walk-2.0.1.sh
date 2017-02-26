@@ -328,9 +328,9 @@ archvtype () {
 			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt "$1" ; }
 			;;
 		*" ar archive"*|"X-"*".a")
-			aropt="svoPU"
-			fn_unpack   () {                              ar x${aropt} "$1" ; }
-			fn_pack     () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
+			aropt="voPU"
+			fn_unpack   () {                              ar  x${aropt} "$1" ; }
+			fn_pack     () { find_all -type f | xargs -0r ar rs${aropt} "$1" ; }
 			;;
 		*)
 			return 1
