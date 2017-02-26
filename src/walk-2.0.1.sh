@@ -37,8 +37,8 @@ EXIT_UNKNOWNTYPE=3
 EXIT_PACKFAIL=6
 EXIT_UNPACKFAIL=7
 
-msg  () { echo "$msgprefix$@" ; }
-err  () { echo "$errprefix$@" >&2 ; }
+msg  () { printf '%s\n' "$msgprefix$*" ; }
+err  () { printf '%s\n' "$errprefix$*" >&2 ; }
 fail () {
 	# fail [EXITSTATUS=1] MESSAGE
 	local status=1
@@ -70,7 +70,7 @@ ask () {
 
 syntaxline="syntax: $prog [-cyA] ARCHIVE "
 help () {
-	echo "$syntaxline"
+	printf '%s\n' "$syntaxline"
 	echo ""
 	echo "walk v2.0.1 will unpack an archive file into a new directory of the"
 	echo "same name and spawn a new shell within that directory. After said"
