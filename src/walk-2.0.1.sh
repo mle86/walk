@@ -188,6 +188,15 @@ fn_delete () {
 	# or which can update existing archives correctly.
 }
 
+fn_packroot () {
+	# Default function.
+	# Only a few archivers can actually include the archive's root directory (tar and cpio can, for example).
+	# This behavior is triggered with the -A option.
+	# For archivers which cannot do it,
+	# well just fall-back to the regular pack function:
+	fn_pack "$@"
+}
+
 repack_archive () {
 	if ask "Recreate archive $archv ? [Y/n]" y; then
 		msg "recreating archive"
@@ -285,13 +294,11 @@ archvtype () {
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
 			fn_unpack   () { 7zr x $z7opt "$1"   ; }
-			fn_packroot () { 7zr a $z7opt "$1" . ; }
 			fn_pack     () { 7zr a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r0 -tl"
 			fn_unpack   () { rar x $raropt "$1"   ; }
-			fn_packroot () { rar a $raropt "$1" . ; }
 			fn_pack     () { rar a $raropt "$1" . ; }
 			;;
 		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
@@ -300,7 +307,6 @@ archvtype () {
 			export ZIPOPT=
 			zipopt=""
 			fn_unpack   () { unzip -X    $zipopt "$1"   ; }
-			fn_packroot () { zip   -y -r $zipopt "$1" . ; }
 			fn_pack     () { zip   -y -r $zipopt "$1" . ; }
 			# Updating archives with the --filesync mode would be faster,
 			# but Info-ZIP v3.0 does not consider changed file access modes update-worthy.
@@ -315,7 +321,6 @@ archvtype () {
 		*" ar archive"*|"X-"*".a")
 			aropt="svoP"
 			fn_unpack   () {                              ar x${aropt} "$1" ; }
-			fn_packroot () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
 			fn_pack     () { find_all -type f | xargs -0r ar r${aropt} "$1" ; }
 			;;
 		*)
