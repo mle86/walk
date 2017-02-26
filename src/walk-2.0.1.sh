@@ -184,10 +184,17 @@ fn_delete () {
 	# Many archiver programs won't completely overwrite existing archives,
 	# but will instead try to update them, often incorrectly.
 	# In this case, it's better to simply delete and completely re-create the archive.
-	rm -- "$1"
 	# Overwrite this function with an empty dummy function
 	# for archivers which will happily overwrite existing archives (like tar)
 	# or which can update existing archives correctly.
+
+	if [ -f "$1" ]; then
+		rm -- "$1"
+	elif [ -n "$create_empty" ]; then
+		: # Ok, there is no original archive file, but that's because we're just now creating it.
+	else
+		fail "could not remove original archive '$1': file not found"
+	fi
 }
 
 fn_packroot () {

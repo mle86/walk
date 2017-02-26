@@ -1,4 +1,5 @@
 next
+	- Fix -c archive creation for 7z/zip/rar/ar
 	- Preserve owner/mode/timestamps in .a archives (ar)
 	- Delete incompletely unpacked directories on unpacking errors
 	- Correct error message for non-existing archives
