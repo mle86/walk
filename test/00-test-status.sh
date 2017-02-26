@@ -4,6 +4,7 @@
 # This test script checks if walk will use the correct exit status values
 # in various error conditions.
 # EXIT_NOTFOUND is tested in 00-test-nocreate.
+# EXIT_UNKNOWNTYPE is tested in 00-test-unknowntype.
 # The more complicated failure states are tested in 08-test-packfail.
 
 cd_tmpdir
