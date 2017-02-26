@@ -2,6 +2,7 @@
 . $(dirname "$0")/init.sh
 
 # This test script checks if walk will correctly exit after the archiver program failed.
+# The easier failure results are tested in 00-test-status.
 
 make_mini_archive () {
 	echo foo > mini-archive-test-file
