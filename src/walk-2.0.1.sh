@@ -50,7 +50,7 @@ fail () {
 	exit $status
 }
 ask () {
-	# 1=prompt, 2=default
+	# ask PROMPT [DEFAULT]
 	local response=
 	if [ "$force_answer" = "default" ]; then
 		# use default answer for all questions,
