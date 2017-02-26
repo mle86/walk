@@ -1,4 +1,5 @@
 next
+	- Preserve owner/mode/timestamps in .a archives (ar)
 	- Delete incompletely unpacked directories on unpacking errors
 	- Correct error message for non-existing archives
 
