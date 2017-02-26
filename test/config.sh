@@ -2,7 +2,7 @@
 
 umask 0022
 
-WALK="$(readlink -f -- "$HERE/../src/walk-2.0.1.sh")"
+WALK="$(readlink -f -- "$HERE/../src/walk-2.0.2.sh")"
 
 # Code duplication: this block of constants is copied from walk.sh.
 EXIT_SYNTAX=1
