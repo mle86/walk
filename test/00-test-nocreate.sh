@@ -1,7 +1,7 @@
 #!/bin/bash
 . $(dirname "$0")/init.sh
 
-# This script tests if walk will deny to create a new archive without the -c option.
+# This script tests if walk will refuse to create a new archive without the -c option.
 
 ARCHIVE="test-9810994571.tar.gz"
 
