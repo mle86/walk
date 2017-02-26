@@ -1,3 +1,6 @@
+next
+	- Delete incompletely unpacked directories on unpacking errors
+
 v2.0.1 (May 2016)
 	- Repo cleanup
 

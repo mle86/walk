@@ -157,7 +157,7 @@ unpack_archive () {
 		# Restore archive file, remove empty working directory
 		err "Unpacking failed (status $status)."
 		cd -- "$(dirname -- "$archv")"
-		rmdir -- "$archv"
+		rm -rf -- "$archv"
 		mv -- "$temp" "$archv"
 		exit $EXIT_UNPACKFAIL
 	fi
