@@ -150,8 +150,8 @@ unpack_archive () {
 	create_working_dir "$archv"
 
 	# Extract archive there
-	fn_unpack "$usearchv"
-	local status="$?"
+	local status=0
+	fn_unpack "$usearchv" || status=$?
 
 	if [ "$status" -ne 0 ]; then
 		# Restore archive file, remove empty working directory
@@ -192,12 +192,11 @@ repack_archive () {
 	if ask "Recreate archive $archv ? [Y/n]" y; then
 		msg "recreating archive"
 		fn_delete "$usearchv"
+		local status=0
 		if [ "$pack_root" ]; then
-			fn_packroot "$usearchv"
-			local status="$?"
+			fn_packroot "$usearchv" || status=$?
 		else
-			fn_pack "$usearchv"
-			local status="$?"
+			fn_pack "$usearchv" || status=$?
 		fi
 
 		if [ "$status" -ne 0 ]; then
