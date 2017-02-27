@@ -354,6 +354,7 @@ test_reentry () {
 	# Test if $archv is a directory that can be re-entered,
 	# and set $temp/$reentry if so.
 	# This is the case if there is still a temporary archive of the same name around.
+	# and/or the directory has an archive filename extension.
 	[ -d "$archv/" ] || return 1
 
 	archv="$(readlink -f -- "$archv")"
@@ -369,6 +370,21 @@ test_reentry () {
 	fi
 
 	# No renamed original archive found.
+	# Maybe the user just wants to create a fresh archive out of a directory,
+	# or this is actually a re-entry into a failed "walk -c" directory
+	# (which leaves no renamed archive behind).
+	# Is the directory filename enough for a filetype match?
+	if archvtype "$archv"; then
+		# Okay, the directory name corresponds to a known archive type!
+		reentry=yes
+		temp=
+
+		return 0
+	fi
+
+	# There is no renamed original archive,
+	# and the target directory name does not look like an archive either.
+	# Give up:
 	false
 }
 

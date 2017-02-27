@@ -1,5 +1,6 @@
 next
 	- Support re-entry into previously-unpacked archive directory
+	- Support direct entry into directory with archive-like name
 
 v2.0.2 (February 2017)
 	- Fix -c archive creation for 7z/zip/rar/ar
