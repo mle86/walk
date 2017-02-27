@@ -154,6 +154,7 @@ unpack_archive () {
 	create_working_dir "$archv"
 
 	# Extract archive there
+	cd -- "$archv"
 	local status=0
 	fn_unpack "$usearchv" || status=$?
 
@@ -171,11 +172,11 @@ create_working_dir () {
 	# Don't set any special modes -- it'll depend on the user's umask.
 	# If the unpacked archive contains a '.' entry, that will overwrite the mode anyway.
 	mkdir -- "$1"
-	cd -- "$1"
 }
 
 enter_tempdir () {
 	# Start new subshell:
+	cd -- "$archv/"  # unpack_archive() already does this for unpacking, but $archv is an absolute path
 	msg "starting new shell"
 	${SHELL:-'/bin/bash'} -i  || true
 	msg "shell terminated."
