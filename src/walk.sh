@@ -148,12 +148,13 @@ read_arguments "$@"
 
 #####################################################################
 
-if [ ! -e "$archv" -a -z "$create_empty" ]; then
+if [ ! -e "$archv" ] && [ -z "$create_empty" ]; then
 	err "$archv not found"
 	err "Do you want to create an empty archive? Use the -c option"
 	exit $EXIT_NOTFOUND
 fi
-if [ -e "$archv" -a ! -f "$archv" ]; then
+
+if [ -e "$archv" ] && [ ! -f "$archv" ]; then
 	fail $EXIT_NOTAFILE "$archv is not a file"
 fi
 
