@@ -27,7 +27,11 @@ msgprefix="$prog: "
 create_empty=
 pack_root=
 force_answer=
+
 reentry=
+archv=
+temp=
+usearchv=
 
 EXIT_SYNTAX=1
 EXIT_HELP=0
@@ -235,7 +239,7 @@ cleanup () {
 		msg "deleting temp dir"
 		rm -rf -- "$archv"
 	else
-		save="${archv}-$(date +'%Y%m%d-%H%M')"
+		local save="${archv}-$(date +'%Y%m%d-%H%M')"
 		msg "renaming temp dir to $save"
 		mv -- "$archv" "$save"
 	fi
