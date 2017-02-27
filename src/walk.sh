@@ -49,6 +49,7 @@ fail () {
 	err "$1"
 	exit $status
 }
+
 ask () {
 	# ask PROMPT [DEFAULT]
 	local response=
@@ -66,6 +67,7 @@ ask () {
 	fi
 	[ "$response" = "y" -o "$response" = "Y" -o "$response" = "yes" -o "$response" = "Yes" ]  # is "yes"-like?
 }
+
 expect () {
 	# expect STATUS_LIST COMMAND...
 	#  Will execute COMMAND.
@@ -91,7 +93,6 @@ expect () {
 			return $status
 	esac
 }
-
 
 syntaxline="syntax: $prog [-cyA] ARCHIVE "
 help () {
@@ -144,31 +145,6 @@ read_arguments () {
 
 	archv="$1"
 }
-read_arguments "$@"
-
-#####################################################################
-
-if [ ! -e "$archv" ] && [ -z "$create_empty" ]; then
-	err "$archv not found"
-	err "Do you want to create an empty archive? Use the -c option"
-	exit $EXIT_NOTFOUND
-fi
-
-if [ -e "$archv" ] && [ ! -f "$archv" ]; then
-	fail $EXIT_NOTAFILE "$archv is not a file"
-fi
-
-
-archv="$(readlink -f -- "$archv")"  # get absolute path to archive
-temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
-
-if [ -e "$temp" ]; then
-	fail $EXIT_EXISTS "File or folder $temp already exists!"
-fi
-
-usearchv="$temp"
-
-#####################################################################
 
 unpack_archive () {
 	# Rename archive file
@@ -193,7 +169,7 @@ unpack_archive () {
 
 create_working_dir () {
 	# Don't set any special modes -- it'll depend on the user's umask.
-	# If the unpacked archive contains a '.' entry, that will overwrite the mode anyway. 
+	# If the unpacked archive contains a '.' entry, that will overwrite the mode anyway.
 	mkdir -- "$1"
 	cd -- "$1"
 }
@@ -364,6 +340,31 @@ archvtype () {
 	esac
 	return 0
 }
+
+#####################################################################
+
+
+read_arguments "$@"
+
+if [ ! -e "$archv" ] && [ -z "$create_empty" ]; then
+	err "$archv not found"
+	err "Do you want to create an empty archive? Use the -c option"
+	exit $EXIT_NOTFOUND
+fi
+
+if [ -e "$archv" ] && [ ! -f "$archv" ]; then
+	fail $EXIT_NOTAFILE "$archv is not a file"
+fi
+fi
+
+archv="$(readlink -f -- "$archv")"  # get absolute path to archive
+temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
+
+if [ -e "$temp" ]; then
+	fail $EXIT_EXISTS "File or folder $temp already exists!"
+fi
+
+usearchv="$temp"
 
 #####################################################################
 
