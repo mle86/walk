@@ -244,7 +244,15 @@ cleanup () {
 		msg "renaming temp dir to $save"
 		mv -- "$archv" "$save"
 	fi
-	mv -- "$temp" "$archv"
+
+	if [ -f "$temp" ]; then
+		# restore original archive
+		mv -- "$temp" "$archv"
+	elif [ "$create_empty" ]; then
+		: # This is okay. It happens if the user walked into a new archive (-c), but chose to not create it at the end.
+	else
+		err "Original archive file '$temp' not found!"
+	fi
 }
 
 tartype () {
