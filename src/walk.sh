@@ -292,13 +292,12 @@ archvtype () {
 	case "$filetype" in
 		*"tar archive"*|"X-"*".tar"|"X-"*".tar."*|"X-"*".tgz"|"X-"*".tbz2"|"X-"*".tbz"|"X-"*".txz")
 			taropt="-pvS"
-			local taropt_extract='-s'
 			local taropt_gzip='-z'
 			local taropt_bzip2='-j'
 			local taropt_xz='-J'
 			tartype "$filetype" || return 2
 			fn_delete   () { :; }  # not necessary, tar will overwrite the archive
-			fn_unpack   () {             tar -x $taropt $taropt_extract -f "$1"             ; }
+			fn_unpack   () {             tar -x $taropt -s              -f "$1"             ; }
 			fn_packroot () {             tar -c $taropt                 -f "$1" .           ; }
 			fn_pack     () { find_flat | tar -c $taropt                 -f "$1" --null -T - ; }
 			;;
