@@ -32,6 +32,7 @@ reentry=
 archv=
 temp=
 usearchv=
+type_found=
 
 EXIT_SYNTAX=1
 EXIT_HELP=0
@@ -286,6 +287,8 @@ find_all  () { find_root -mindepth 1 "$@" ; }
 find_flat () { find_all -maxdepth 1 "$@" ; }
 
 archvtype () {
+	[ "$type_found" ] && return 0  # only check once
+
 	local filetype=
 	if [ -f "$1" ]; then
 		# File exists, try to determine type using 'file' tool
@@ -343,6 +346,7 @@ archvtype () {
 			return 1
 			;;
 	esac
+	type_found=yes
 	return 0
 }
 
