@@ -291,7 +291,7 @@ tartype () {
 }
 
 determine_archive_type () {
-	if ! archvtype; then
+	if ! archvtype "$1"; then
 		fail $EXIT_UNKNOWNTYPE "unknown archive file type!"
 	fi
 }
@@ -305,12 +305,12 @@ find_flat () { find_all -maxdepth 1 "$@" ; }
 
 archvtype () {
 	local filetype=
-	if [ -e "$archv" ]; then
+	if [ -e "$1" ]; then
 		# File exists, try to determine type using 'file' tool
-		filetype="$(file -Nbz -- "$archv" 2>/dev/null | tr '[A-Z]' '[a-z]')" || return 1
+		filetype="$(file -Nbz -- "$1" 2>/dev/null | tr '[A-Z]' '[a-z]')" || return 1
 	else
 		# File does not yet exist -- try to guess type from filename itself
-		filetype="X-${archv}"
+		filetype="X-$1"
 	fi
 
 	case "$filetype" in
@@ -367,7 +367,7 @@ archvtype () {
 
 #####################################################################
 
-determine_archive_type
+determine_archive_type "$archv"
 
 if [ -e "$archv" ]; then
 	msg "unpacking archive"
