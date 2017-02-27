@@ -27,6 +27,7 @@ msgprefix="$prog: "
 create_empty=
 pack_root=
 force_answer=
+reentry=
 
 EXIT_SYNTAX=1
 EXIT_HELP=0
@@ -282,7 +283,7 @@ find_flat () { find_all -maxdepth 1 "$@" ; }
 
 archvtype () {
 	local filetype=
-	if [ -e "$1" ]; then
+	if [ -f "$1" ]; then
 		# File exists, try to determine type using 'file' tool
 		filetype="$(file -Nbz -- "$1" 2>/dev/null | tr '[A-Z]' '[a-z]')" || return 1
 	else
@@ -341,6 +342,28 @@ archvtype () {
 	return 0
 }
 
+test_reentry () {
+	# Test if $archv is a directory that can be re-entered,
+	# and set $temp/$reentry if so.
+	# This is the case if there is still a temporary archive of the same name around.
+	[ -d "$archv/" ] || return 1
+
+	archv="$(readlink -f -- "$archv")"
+	local pattern=".$(basename -- "$archv")-WALK-????????-??????"
+
+	if temp="$(find -maxdepth 1 -type f -name "$pattern" -print -quit)" && [ -n "$temp" ]; then
+		# Okay, found the original archive!
+		msg "found earlier archive file '$temp'"
+		reentry=yes
+		temp="$(readlink -f -- "$temp")"  # get absolute filename
+
+		return 0
+	fi
+
+	# No renamed original archive found.
+	false
+}
+
 #####################################################################
 
 
@@ -353,14 +376,16 @@ if [ ! -e "$archv" ] && [ -z "$create_empty" ]; then
 fi
 
 if [ -e "$archv" ] && [ ! -f "$archv" ]; then
-	fail $EXIT_NOTAFILE "$archv is not a file"
-fi
+	if [ ! -d "$archv/" ] || ! test_reentry; then
+		# it's not a re-enterable directory. give up:
+		fail $EXIT_NOTAFILE "$archv is not a file"
+	fi
 fi
 
 archv="$(readlink -f -- "$archv")"  # get absolute path to archive
-temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
+[ -n "$temp" ] || temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
 
-if [ -e "$temp" ]; then
+if [ -e "$temp" ] && [ -z "$reentry" ]; then
 	fail $EXIT_EXISTS "File or folder $temp already exists!"
 fi
 
@@ -368,13 +393,16 @@ usearchv="$temp"
 
 #####################################################################
 
-determine_archive_type "$archv"
-
-if [ -e "$archv" ]; then
+if [ "$reentry" ]; then
+	msg "re-entering archive directory"
+	determine_archive_type "${temp:-$archv}"
+elif [ -f "$archv" ]; then
 	msg "unpacking archive"
+	determine_archive_type "$archv"
 	unpack_archive
 else
 	msg "creating archive"
+	determine_archive_type "$archv"
 	create_working_dir "$archv"
 fi
 
