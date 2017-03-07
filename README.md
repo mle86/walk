@@ -104,7 +104,7 @@ concerning file ownership:
   the owner informations are silently discarded.
 * **a** archives (**ar**(1)) can store owner informations,
   but will always discard them on unpacking.
-* **7r** and **rar** archives don't store owner informations.
+* **7z** and **rar** archives don't store owner informations.
 
 # Example
 
