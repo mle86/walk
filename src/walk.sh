@@ -328,7 +328,7 @@ archvtype () {
 			fn_unpack   () { rar x $raropt "$1"   ; }
 			fn_pack     () { rar a $raropt "$1" . ; }
 			;;
-		*"zip archive"*|*"Jar file data (zip)"*|"X-"*".zip"|"X-"*".jar")
+		*"zip archive"*|*"jar file data (zip)"*|*"java archive data (jar)"*|"X-"*".zip"|"X-"*".jar")
 			export UNZIP=
 			export ZIP=
 			export ZIPOPT=
