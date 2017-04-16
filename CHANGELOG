@@ -1,6 +1,7 @@
 next
 	- Support re-entry into previously-unpacked archive directory
 	- Support direct entry into directory with archive-like name
+	- Improved .7z support (use 7z/7zr/7za archiver as available)
 	- Fix minor no-recreate bug
 	- Fix .jar archive type recognition
 

@@ -47,7 +47,7 @@ Currently, it supports handling these file types:
   (requires tar with built-in support for these compression formats,
   i.e. the -zjJ options)
 * 7-zip
-  (requires **7zr** binary)
+  (requires **7z**/**7za**/**7zr** binary)
 * zip, jar
   (requires **zip** and **unzip** binaries)
 * rar

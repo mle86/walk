@@ -117,7 +117,7 @@ help () {
 	echo ""
 	echo "Recognized archive types:"
 	echo " - tar, tar.gz, tar.bz2, tar.xz (requires tar with built-in compression support)"
-	echo " - 7-zip (requires 7zr)"
+	echo " - 7-zip (requires 7z/7za/7zr)"
 	echo " - zip, jar (requires zip/unzip)"
 	echo " - rar (requires rar)"
 	echo " - cpio, ar"
@@ -320,8 +320,8 @@ archvtype () {
 			;;
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
-			fn_unpack   () { 7zr x $z7opt "$1"   ; }
-			fn_pack     () { 7zr a $z7opt "$1" . ; }
+			fn_unpack   () { _7z x $z7opt "$1"   ; }
+			fn_pack     () { _7z a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r0 -tl"
@@ -395,6 +395,24 @@ test_reentry () {
 	# Give up:
 	false
 }
+
+findbin () {
+	# findbin BINARY...
+	#  Returns the path of the first BINARY that which(1) could find.
+	local list="$*"
+	while [ $# -gt 0 ]; do
+		which "$1" && return
+		shift
+	done
+	err "binary not found: $list"
+}
+
+_7z () {
+	local bin
+	bin=$(findbin 7z 7za 7zr) || return
+	"$bin" "$@"
+}
+
 
 #####################################################################
 
