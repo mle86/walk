@@ -1,4 +1,4 @@
-next
+v2.1.0 (May 2017)
 	- Support re-entry into previously-unpacked archive directory
 	- Support direct entry into directory with archive-like name
 	- Improved .7z support (use 7z/7zr/7za archiver as available)
