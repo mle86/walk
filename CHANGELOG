@@ -1,3 +1,6 @@
+next (July 2017)
+	- Readme cleanup
+
 v2.1.0 (May 2017)
 	- Support re-entry into previously-unpacked archive directory
 	- Support direct entry into directory with archive-like name

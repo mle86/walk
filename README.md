@@ -4,7 +4,7 @@
 
 Version 2.1.0, May 2017
 
-```walk [-cyA] [--] ARCHIVE```
+<pre><code><b>walk</b> [<b>-cyA</b>] [<b>--</b>] <i>ARCHIVE</i></code></pre>
 
 # Description
 
@@ -37,7 +37,7 @@ This is just a shell script, it does not need any compilation.
 This will copy the script to /usr/local/bin/**walk**
 and the man page to /usr/local/share/man/man.1/**walk.1.gz**.
 
-# Supported file types
+# Supported File Types
 
 **walk** uses the **file**(1) tool to determine the archive file type.
 Currently, it supports handling these file types:
@@ -76,18 +76,18 @@ These extensions are recognized:
 # Options
 
 
-* **-c**
+* **-c**  
   Create non-existing *ARCHIVE*s
   instead of exiting with an error.
-* **-y**
+* **-y**  
   Assume `yes' for the two questions **walk** asks after leaving the subshell.
   This means the original archive will always be recreated,
   and the temporary archive directory will always be removed afterwards. 
-* **-A**
+* **-A**  
   Store the working directory root (**.**) in the archive,
   not just its contents.
   Not all archivers support this
-  (**tar** and **cpio** do).
+  (**tar** and **cpio** do).  
   Unpacking archives which contain the **.** directory entry
   can cause the current directory's owner and/or mode to be changed
   by the archiver program,
@@ -109,56 +109,57 @@ concerning file ownership:
 # Example
 
 
-    mle@box:~$ walk test.tgz
-     walk: unpacking archive
-     ./httpd.conf
-     ./rawdata
-     ./uname
-     ./subdir/
-     ./subdir/a1
-     ./subdir/a2
-     ./subdir/a3
-     walk: starting new shell
-    mle@box:~/test.tgz$ 
-    mle@box:~/test.tgz$ ls -la
-     drwxr-xr-x  3 mle users 4,0K 2010-09-28 02:44 .
-     drwx------ 24 mle users 4,0K 2010-09-28 02:53 ..
-     -rw-r-----  1 mle users  30K 2010-09-28 02:42 httpd.conf
-     -rw-r--r--  1 mle users 437K 2010-09-28 02:41 rawdata
-     drwxr-xr-x  2 mle users 4,0K 2010-09-28 02:45 subdir
-     -rwxr-xr-x  1 mle users  14K 2010-09-28 02:44 uname
-    mle@box:~/test.tgz$ ls -l subdir/
-     -rw-r--r-- 1 mle users 300 2010-09-28 02:45 a1
-     -rw-r--r-- 1 mle users 400 2010-09-28 02:45 a2
-     -rw-r--r-- 1 mle users 500 2010-09-28 02:45 a3
-    mle@box:~/test.tgz$ rm subdir/a2
-    mle@box:~/test.tgz$ echo foo > bar
-    mle@box:~/test.tgz$ >rawdata
-    mle@box:~/test.tgz$ 
-    mle@box:~/test.tgz$ exit
-     walk: shell terminated.
-     walk: Recreate archive test.tgz ? [Y/n]  y
-     walk: recreating archive
-     ./httpd.conf
-     ./bar
-     ./rawdata
-     ./uname
-     ./subdir/
-     ./subdir/a1
-     ./subdir/a3
-     walk: Delete temporary directory? [Y/n]  y
-     walk: deleting temp dir
-    mle@box:~$ 
-    mle@box:~$ ls -l test*
-     -rw-r--r-- 1 mle users 19K 2010-09-28 02:56 test.tgz
-    mle@box:~$ tar tzvf test.tgz
-     -rw-r----- mle/users     30398 2010-09-28 02:42:48 ./httpd.conf
-     -rw-r--r-- mle/users         4 2010-09-28 02:55:12 ./bar
-     -rw-r--r-- mle/users         0 2010-09-28 02:55:24 ./rawdata
-     -rwxr-xr-x mle/users     13900 2010-09-28 02:44:45 ./uname
-     drwxr-xr-x mle/users         0 2010-09-28 02:54:50 ./subdir/
-     -rw-r--r-- mle/users       300 2010-09-28 02:45:28 ./subdir/a1
-     -rw-r--r-- mle/users       500 2010-09-28 02:45:35 ./subdir/a3
+<pre><code>mle@box:~$ <b>walk test.tgz</b>
+ walk: unpacking archive
+ ./httpd.conf
+ ./rawdata
+ ./uname
+ ./subdir/
+ ./subdir/a1
+ ./subdir/a2
+ ./subdir/a3
+ walk: starting new shell
+mle@box:~/test.tgz$ 
+mle@box:~/test.tgz$ <b>ls -la</b>
+ drwxr-xr-x  3 mle users 4,0K 2010-09-28 02:44 .
+ drwx------ 24 mle users 4,0K 2010-09-28 02:53 ..
+ -rw-r-----  1 mle users  30K 2010-09-28 02:42 httpd.conf
+ -rw-r--r--  1 mle users 437K 2010-09-28 02:41 rawdata
+ drwxr-xr-x  2 mle users 4,0K 2010-09-28 02:45 subdir
+ -rwxr-xr-x  1 mle users  14K 2010-09-28 02:44 uname
+mle@box:~/test.tgz$ <b>ls -l subdir/</b>
+ -rw-r--r-- 1 mle users 300 2010-09-28 02:45 a1
+ -rw-r--r-- 1 mle users 400 2010-09-28 02:45 a2
+ -rw-r--r-- 1 mle users 500 2010-09-28 02:45 a3
+mle@box:~/test.tgz$ <b>rm subdir/a2</b>
+mle@box:~/test.tgz$ <b>echo foo > bar</b>
+mle@box:~/test.tgz$ <b>>rawdata</b>
+mle@box:~/test.tgz$ 
+mle@box:~/test.tgz$ <b>exit</b>
+ walk: shell terminated.
+ walk: Recreate archive test.tgz ? [Y/n]  <b>y</b>
+ walk: recreating archive
+ ./httpd.conf
+ ./bar
+ ./rawdata
+ ./uname
+ ./subdir/
+ ./subdir/a1
+ ./subdir/a3
+ walk: Delete temporary directory? [Y/n]  <b>y</b>
+ walk: deleting temp dir
+mle@box:~$ 
+mle@box:~$ <b>ls -l test*</b>
+ -rw-r--r-- 1 mle users 19K 2010-09-28 02:56 test.tgz
+mle@box:~$ <b>tar tzvf test.tgz</b>
+ -rw-r----- mle/users     30398 2010-09-28 02:42:48 ./httpd.conf
+ -rw-r--r-- mle/users         4 2010-09-28 02:55:12 ./bar
+ -rw-r--r-- mle/users         0 2010-09-28 02:55:24 ./rawdata
+ -rwxr-xr-x mle/users     13900 2010-09-28 02:44:45 ./uname
+ drwxr-xr-x mle/users         0 2010-09-28 02:54:50 ./subdir/
+ -rw-r--r-- mle/users       300 2010-09-28 02:45:28 ./subdir/a1
+ -rw-r--r-- mle/users       500 2010-09-28 02:45:35 ./subdir/a3
+</code></pre>
 
 # License
 
@@ -166,4 +167,4 @@ GNU GPL v3
 
 # Author
 
-Maximilian Eul <[maximilian@eul.cc](mailto:maximilian@eul.cc)>
+Maximilian Eul &lt;[maximilian@eul.cc](mailto:maximilian@eul.cc)>
