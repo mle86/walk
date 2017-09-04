@@ -42,6 +42,7 @@ EXIT_EXISTS=2
 EXIT_UNKNOWNTYPE=3
 EXIT_PACKFAIL=6
 EXIT_UNPACKFAIL=7
+EXIT_NOPROG=127
 
 msg  () { printf '%s\n' "$msgprefix$*" ; }
 err  () { printf '%s\n' "$errprefix$*" >&2 ; }
@@ -404,12 +405,12 @@ findbin () {
 		which "$1" && return
 		shift
 	done
-	err "binary not found: $list"
+	fail $EXIT_NOPROG "binary not found: $list"
 }
 
 _7z () {
 	local bin
-	bin=$(findbin 7z 7za 7zr) || return
+	bin=$(findbin 7z 7za 7zr) || exit $?
 	"$bin" "$@"
 }
 
