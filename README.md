@@ -2,6 +2,9 @@
 
 # walk(1) - enter and manipulate archive files like directories
 
+[![Build Status](https://travis-ci.org/mle86/walk.svg?branch=master)](https://travis-ci.org/mle86/walk)
+
+
 Version 2.1.0, May 2017
 
 <pre><code><b>walk</b> [<b>-cyA</b>] [<b>--</b>] <i>ARCHIVE</i></code></pre>
@@ -36,6 +39,8 @@ This is just a shell script, it does not need any compilation.
 
 This will copy the script to /usr/local/bin/**walk**
 and the man page to /usr/local/share/man/man.1/**walk.1.gz**.
+
+
 
 # Supported File Types
 
