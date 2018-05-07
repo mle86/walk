@@ -1,0 +1,12 @@
+addons:
+  apt:
+    packages:
+      - p7zip
+      - rar
+      - unrar
+
+install:
+  - make
+
+script:
+  - make test

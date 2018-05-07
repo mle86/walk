@@ -1,5 +1,6 @@
-next (July 2017)
+next (May 2018)
 	- Readme cleanup
+	- Travis CI
 
 v2.1.0 (May 2017)
 	- Support re-entry into previously-unpacked archive directory
