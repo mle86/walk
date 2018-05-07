@@ -80,7 +80,7 @@ These extensions are recognized:
   Create non-existing *ARCHIVE*s
   instead of exiting with an error.
 * **-y**  
-  Assume `yes' for the two questions **walk** asks after leaving the subshell.
+  Assume \`yes' for the two questions **walk** asks after leaving the subshell.
   This means the original archive will always be recreated,
   and the temporary archive directory will always be removed afterwards. 
 * **-A**  

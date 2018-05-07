@@ -13,7 +13,7 @@ test:
 
 README.md: man/*
 	git submodule update --init man/man-to-md/
-	perl man/man-to-md.pl --comment --formatted-code --paste-after DESCRIPTION:'Installation.md' <man/walk.1 >$@
+	perl man/man-to-md.pl --comment --formatted-code --paste-section-after DESCRIPTION:'Installation.md' <man/walk.1 >$@
 
 install:
 	mkdir -p /usr/local/share/man/man1
