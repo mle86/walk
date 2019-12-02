@@ -3,6 +3,7 @@
 # walk(1) - enter and manipulate archive files like directories
 
 [![Build Status](https://travis-ci.org/mle86/walk.svg?branch=master)](https://travis-ci.org/mle86/walk)
+[![GPLv3 License](https://img.shields.io/badge/license-GPL%20v3-498e7f.svg?style=flat)](/COPYING)
 
 
 Version 2.2.0, December 2019
