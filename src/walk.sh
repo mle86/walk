@@ -3,7 +3,7 @@ set -e
 
 #  walk v2.2.0
 #  
-#  Copyright (C) 2017,2018  Maximilian L. Eul
+#  Copyright (C) 2017-2019  Maximilian L. Eul
 #  This file is part of walk.
 #
 #  walk is free software: you can redistribute it and/or modify

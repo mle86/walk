@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/mle86/walk.svg?branch=master)](https://travis-ci.org/mle86/walk)
 
 
-Version 2.2.0, May 2018
+Version 2.2.0, December 2019
 
 <pre><code><b>walk</b> [<b>-cyA</b>] [<b>--</b>] <i>ARCHIVE</i></code></pre>
 
