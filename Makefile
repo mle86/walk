@@ -11,14 +11,14 @@ test:
 	git submodule update --init test/framework/
 	test/run-all-tests.sh
 
-README.md: man/walk.1 man/*.md
-	git submodule update --init man/man-to-md/
-	perl man/man-to-md.pl --comment --formatted-code --paste-after HEADLINE:'Badges.md' --paste-section-after DESCRIPTION:'Installation.md' <$< >$@
+README.md: doc/walk.1 doc/*.md
+	git submodule update --init doc/man-to-md/
+	perl doc/man-to-md.pl --comment --formatted-code --paste-after HEADLINE:'Badges.md' --paste-section-after DESCRIPTION:'Installation.md' <$< >$@
 
 install:
 	mkdir -p /usr/local/share/man/man1
 	
-	cp man/walk.1 /usr/local/share/man/man1/
+	cp doc/walk.1 /usr/local/share/man/man1/
 	chmod 0644 /usr/local/share/man/man1/walk.1
 	gzip -f /usr/local/share/man/man1/walk.1
 	
