@@ -1,5 +1,4 @@
 .TH WALK "1" "May 2018" "walk 2.2.0" "walk"
-
 .SH NAME
 walk \- enter and manipulate archive files like directories
 .SH SYNOPSIS
@@ -11,7 +10,7 @@ walk \- enter and manipulate archive files like directories
 \fBwalk\fR is a shell tool
 which allows you to treat archive files as directories.
 It completely unpacks an archive file
-into a temporary directory named exactly as the archive itself.
+into a temporary directory named to match the archive filename.
 It then spawns a new shell inside the new temporary directory,
 where you may proceed with any command line stuff you wish to do.
 After leaving this shell,
@@ -20,7 +19,7 @@ with the contents of the temporary directory (which you may have changed).
 This way, you can interactively edit an existing archive,
 examine its content, add files to it
 and whatever else you wish to do with its contents.
-
+.P
 If \fBwalk\fR is invoked on a non-existing filename or a non-file name
 without the \fB-c\fR option,
 it will print an error and exit.
@@ -57,7 +56,7 @@ the \fBfile\fR tool cannot be used,
 as there is no prior archive file to analyze.
 In this case, the type is guessed from the filename extension.
 These extensions are recognized:
-
+.P
  .tar,
  .tar.gz, .tgz,
  .tar.bz, .tbz, tar.bz2, .tbz2,
@@ -102,7 +101,7 @@ but will always discard them on unpacking.
 .IP - 2
 \fB7z\fR and \fBrar\fR archives don't store owner informations.
 .SH EXAMPLE
-
+.P
 .nf
 mle@box:~$ \fBwalk test.tgz\fR
  walk: unpacking archive

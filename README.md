@@ -14,7 +14,7 @@ Version 2.2.0, May 2018
 **walk** is a shell tool
 which allows you to treat archive files as directories.
 It completely unpacks an archive file
-into a temporary directory named exactly as the archive itself.
+into a temporary directory named to match the archive filename.
 It then spawns a new shell inside the new temporary directory,
 where you may proceed with any command line stuff you wish to do.
 After leaving this shell,
