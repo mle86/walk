@@ -173,3 +173,4 @@ GNU GPL v3
 # Author
 
 Maximilian Eul &lt;[maximilian@eul.cc](mailto:maximilian@eul.cc)>
+(http://github.com/mle86/walk)
