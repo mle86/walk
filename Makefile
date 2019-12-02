@@ -11,9 +11,9 @@ test:
 	git submodule update --init test/framework/
 	test/run-all-tests.sh
 
-README.md: man/*
+README.md: man/walk.1 man/*.md
 	git submodule update --init man/man-to-md/
-	perl man/man-to-md.pl --comment --formatted-code --paste-after HEADLINE:'Badges.md' --paste-section-after DESCRIPTION:'Installation.md' <man/walk.1 >$@
+	perl man/man-to-md.pl --comment --formatted-code --paste-after HEADLINE:'Badges.md' --paste-section-after DESCRIPTION:'Installation.md' <$< >$@
 
 install:
 	mkdir -p /usr/local/share/man/man1
