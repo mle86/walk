@@ -13,7 +13,7 @@ cd_tmpdir
 mkdir t/
 cd t/
 prepare_standard_archive
-find -type f -print0 | xargs -0 tar -vcf ../$ARCHIVE
+find -type f -print0 | xargs -0 tar -cf ../$ARCHIVE
 cd ../
 rm -rf t/
 

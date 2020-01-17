@@ -5,7 +5,7 @@ ARCHIVE='test.cpio'
 
 cd_tmpdir
 prepare_standard_archive
-find $STDFILES -print0 | cpio -0 -o -B -F $ARCHIVE
+find $STDFILES -print0 | cpio -0 -o --quiet -B -F $ARCHIVE
 delete_standard_archive_files
 
 prepare_subshell <<SH
@@ -15,7 +15,7 @@ SH
 
 assertCmd "$WALK -y $ARCHIVE"
 
-cpio -i --no-absolute-filenames -B -F $ARCHIVE
+cpio -i --no-absolute-filenames --quiet -B -F $ARCHIVE
 verify_modified_standard_archive
 
 success

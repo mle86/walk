@@ -5,7 +5,7 @@ ARCHIVE='test.zip'
 
 cd_tmpdir
 prepare_standard_archive
-rar a -r $ARCHIVE $STDFILES
+rar a -r $ARCHIVE $STDFILES  >/dev/null
 delete_standard_archive_files
 
 prepare_subshell <<SH
@@ -15,7 +15,7 @@ SH
 
 assertCmd "$WALK -y $ARCHIVE"
 
-rar x $ARCHIVE
+rar x $ARCHIVE  >/dev/null
 verify_modified_standard_archive
 
 success

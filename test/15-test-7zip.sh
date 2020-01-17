@@ -5,7 +5,7 @@ ARCHIVE='test.7z'
 
 cd_tmpdir
 prepare_standard_archive
-7zr a -bd $ARCHIVE $STDFILES
+7zr a -bd $ARCHIVE $STDFILES  >/dev/null
 delete_standard_archive_files
 rm -fd $RMSTDFILES
 
@@ -16,7 +16,7 @@ SH
 
 assertCmd "$WALK -y $ARCHIVE"
 
-7zr x $ARCHIVE
+7zr x $ARCHIVE  >/dev/null
 verify_modified_standard_archive
 
 success
