@@ -52,9 +52,9 @@ ar
 (requires the GNU binutils \fBar\fR binary)
 .LP
 If the \fB-c\fR option has been used to create a new empty archive,
-the \fBfile\fR tool cannot be used,
+the \fBfile\fR tool cannot be used internally
 as there is no prior archive file to analyze.
-In this case, the type is guessed from the filename extension.
+In this case the type is guessed from the filename extension instead.
 These extensions are recognized:
 .P
  .tar,
@@ -68,16 +68,16 @@ These extensions are recognized:
  .a
 .SH OPTIONS
 .TP
-.B -c
+.B \-c
 Create non-existing \fIARCHIVE\fRs
 instead of exiting with an error.
 .TP
-.B -y
+.B \-y
 Assume `yes' for the two questions \fBwalk\fR asks after leaving the subshell.
 This means the original archive will always be recreated,
 and the temporary archive directory will always be removed afterwards. 
 .TP
-.B -A
+.B \-A
 Store the working directory root (\fB.\fR) in the archive,
 not just its contents.
 Not all archivers support this

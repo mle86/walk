@@ -64,9 +64,9 @@ Currently, it supports handling these file types:
   (requires the GNU binutils **ar** binary)
 
 If the **-c** option has been used to create a new empty archive,
-the **file** tool cannot be used,
+the **file** tool cannot be used internally
 as there is no prior archive file to analyze.
-In this case, the type is guessed from the filename extension.
+In this case the type is guessed from the filename extension instead.
 These extensions are recognized:
 
  .tar,
