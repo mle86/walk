@@ -158,7 +158,7 @@ unpack_archive () {
 	mv -- "$archv" "$temp"
 
 	# Unpack archive into new working dir of same name
-	create_working_dir "$archv"
+	create_working_dir "$archv" "$temp"
 
 	# Extract archive there
 	cd -- "$archv"
@@ -175,10 +175,18 @@ unpack_archive () {
 	fi
 }
 
+# create_working_dir NEWDIRNAME [ORIGINALARCHIVENAME]
 create_working_dir () {
-	# Don't set any special modes -- it'll depend on the user's umask.
-	# If the unpacked archive contains a '.' entry, that will overwrite the mode anyway.
-	mkdir -- "$1"
+	local modeopt=
+	if [ -n "$2" ]; then
+		# Directory mode should be similar to archive file's mode, plus +x because it's a directory.
+		# NB: If the unpacked archive contains a '.' entry, that will overwrite the mode!
+		modeopt="--mode=$(calculate_dirmode "$(stat -c '%#a' -- "$2")")"
+	else
+		: # Don't set any special modes -- it'll depend on the user's umask.
+	fi
+
+	mkdir $modeopt -- "$1"
 }
 
 enter_tempdir () {
@@ -395,6 +403,24 @@ test_reentry () {
 	# and the target directory name does not look like an archive either.
 	# Give up:
 	false
+}
+
+# calculate_dirmode OCTALFILEMODE
+#  Finds a suitable mode for a directory based on a file's octal mode string (e.g. "755")
+#  Having read access to the file grants read and execute access to the directory;
+#  having write access to the file grants write access to the directory.
+#  Output is a chmod mode strings like "u=rwx,g=rx,o=".
+#  The owner always gets rwx or the unpacking might fail.
+calculate_dirmode () {
+	local mode="0$1"  # add "0" prefix to make sure $(()) reads this as an octal number
+	local setmode_g=
+	local setmode_o=
+	[ "$(($mode & 0060))" -gt 0 ] && setmode_g="${setmode_g}rx"
+	[ "$(($mode & 0020))" -gt 0 ] && setmode_g="${setmode_g}w"
+	[ "$(($mode & 0006))" -gt 0 ] && setmode_o="${setmode_o}rx"
+	[ "$(($mode & 0002))" -gt 0 ] && setmode_o="${setmode_o}w"
+
+	printf '%s\n' "u=rwx,g=${setmode_g},o=${setmode_o}"
 }
 
 findbin () {
