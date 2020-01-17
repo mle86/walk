@@ -6,7 +6,7 @@
 [![GPLv3 License](https://img.shields.io/badge/license-GPL%20v3-498e7f.svg?style=flat)](/COPYING)
 
 
-Version 2.2.0, December 2019
+Version 2.2.0, January 2020
 
 <pre><code><b>walk</b> [<b>-cyA</b>] [<b>--</b>] <i>ARCHIVE</i></code></pre>
 
