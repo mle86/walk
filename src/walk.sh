@@ -27,6 +27,7 @@ msgprefix="$prog: "
 create_empty=
 pack_root=
 force_answer=
+quiet=
 
 reentry=
 archv=
@@ -44,8 +45,10 @@ EXIT_PACKFAIL=6
 EXIT_UNPACKFAIL=7
 EXIT_NOPROG=127
 
-msg  () { printf '%s\n' "$msgprefix$*" ; }
-err  () { printf '%s\n' "$errprefix$*" >&2 ; }
+msg     () { printf '%s\n' "$msgprefix$*" ; }
+err     () { printf '%s\n' "$errprefix$*" >&2 ; }
+verbose () { [ "$quiet" ] || msg "$*" ; }
+
 fail () {
 	# fail [EXITSTATUS=1] MESSAGE
 	local status=1
@@ -192,9 +195,9 @@ create_working_dir () {
 enter_tempdir () {
 	# Start new subshell:
 	cd -- "$archv/"  # unpack_archive() already does this for unpacking, but $archv is an absolute path
-	msg "starting new shell"
+	verbose "starting new shell"
 	${SHELL:-'/bin/bash'} -i  || true
-	msg "shell terminated."
+	verbose "shell terminated."
 }
 
 fn_delete () {
@@ -246,7 +249,7 @@ repack_archive () {
 
 cleanup () {
 	if ask "Delete temporary directory? [Y/n]" y; then
-		msg "deleting temp dir"
+		verbose "deleting temp dir"
 		rm -rf -- "$archv"
 	else
 		local save="${archv}-$(date +'%Y%m%d-%H%M')"
@@ -261,6 +264,14 @@ cleanup () {
 		: # This is okay. It happens if the user walked into a new archive (-c), but chose to not create it at the end.
 	else
 		err "Original archive file '$temp' not found!"
+	fi
+}
+
+quiet_stdout () {
+	if [ "$quiet" ]; then
+		"$@" >/dev/null
+	else
+		"$@"
 	fi
 }
 
@@ -317,7 +328,8 @@ archvtype () {
 
 	case "$filetype" in
 		*"tar archive"*|"X-"*".tar"|"X-"*".tar."*|"X-"*".tgz"|"X-"*".tbz2"|"X-"*".tbz"|"X-"*".txz")
-			taropt="-pvS"
+			taropt="-pS"
+			[ "$quiet" ] || taropt="${taropt}v"
 			local taropt_gzip='-z'
 			local taropt_bzip2='-j'
 			local taropt_xz='-J'
@@ -329,33 +341,37 @@ archvtype () {
 			;;
 		"7-zip archive"*|"X-"*".7z")
 			z7opt="-bd -ms=on"
-			fn_unpack   () { _7z x $z7opt "$1"   ; }
-			fn_pack     () { _7z a $z7opt "$1" . ; }
+			fn_unpack   () { quiet_stdout _7z x $z7opt "$1"   ; }
+			fn_pack     () { quiet_stdout _7z a $z7opt "$1" . ; }
 			;;
 		*"rar archive"*|"X-"*".rar")
 			raropt="-o+ -ol -ow -r0 -tl"
-			fn_unpack   () { rar x $raropt "$1"   ; }
-			fn_pack     () { rar a $raropt "$1" . ; }
+			fn_unpack   () { quiet_stdout rar x $raropt "$1"   ; }
+			fn_pack     () { quiet_stdout rar a $raropt "$1" . ; }
 			;;
 		*"zip archive"*|*"jar file data (zip)"*|*"java archive data (jar)"*|"X-"*".zip"|"X-"*".jar")
 			export UNZIP=
 			export ZIP=
 			export ZIPOPT=
 			zipopt=""
+			[ "$quiet" ] && zipopt="$zipopt -q"
 			fn_unpack   () { expect "0 1" unzip -X    $zipopt "$1"   ; }
 			fn_pack     () {              zip   -y -r $zipopt "$1" . ; }
 			# Updating archives with the --filesync mode would be faster,
 			# but Info-ZIP v3.0 does not consider changed file access modes update-worthy.
 			;;
 		*"cpio archive"*|"X-"*".cpio")
-			cpioopt="-v -B -F"
+			cpioopt="-B"
+			[ "$quiet" ] && cpioopt="$cpioopt --quiet"
+			[ "$quiet" ] || cpioopt="$cpioopt -v"
 			fn_delete   () { :; }  # not necessary, cpio will overwrite the archive
-			fn_unpack   () { cpio -i -d --no-absolute-filenames --sparse $cpioopt "$1" ; }
-			fn_packroot () { find_root | cpio -0 -o -H crc               $cpioopt "$1" ; }
-			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt "$1" ; }
+			fn_unpack   () { cpio -i -d --no-absolute-filenames --sparse $cpioopt -F "$1" ; }
+			fn_packroot () { find_root | cpio -0 -o -H crc               $cpioopt -F "$1" ; }
+			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt -F "$1" ; }
 			;;
 		*" ar archive"*|"X-"*".a")
-			aropt="voPU"
+			aropt="oPU"
+			[ "$quiet" ] || aropt="${aropt}v"
 			fn_unpack   () {                              ar  x${aropt} "$1" ; }
 			fn_pack     () { find_all -type f | xargs -0r ar rs${aropt} "$1" ; }
 			;;
@@ -474,7 +490,7 @@ if [ "$reentry" ]; then
 	msg "re-entering archive directory"
 	determine_archive_type "${temp:-$archv}"
 elif [ -f "$archv" ]; then
-	msg "unpacking archive"
+	verbose "unpacking archive"
 	determine_archive_type "$archv"
 	unpack_archive
 else
