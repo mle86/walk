@@ -4,6 +4,7 @@
 #### next (January 2020)
 
  - Set safe working directory access mode
+ - Add .ar archive type recognition
  - Support option `-q` (quiet)'
 
 #### v2.2.1 (January 2020)

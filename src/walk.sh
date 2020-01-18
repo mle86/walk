@@ -370,7 +370,7 @@ archvtype () {
 			fn_packroot () { find_root | cpio -0 -o -H crc               $cpioopt -F "$1" ; }
 			fn_pack     () { find_all  | cpio -0 -o -H crc               $cpioopt -F "$1" ; }
 			;;
-		*" ar archive"*|"X-"*".a")
+		*" ar archive"*|"X-"*".a"|"X-"*".ar")
 			aropt="oPU"
 			[ "$quiet" ] || aropt="${aropt}v"
 			fn_unpack   () {                              ar  x${aropt} "$1" ; }
