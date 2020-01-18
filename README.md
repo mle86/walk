@@ -8,7 +8,7 @@
 
 Version 2.2.1, January 2020
 
-<pre><code><b>walk</b> [<b>-cyA</b>] [<b>--</b>] <i>ARCHIVE</i></code></pre>
+<pre><code><b>walk</b> [<b>-cyAq</b>] [<b>--</b>] <i>ARCHIVE</i></code></pre>
 
 # Description
 
@@ -98,6 +98,10 @@ These extensions are recognized:
   can cause the current directory's owner and/or mode to be changed
   by the archiver program,
   so use this option with caution.
+* **-q**  
+  Quiet mode;
+  suppresses most archiver output
+  such as filenames that are being extracted/compressed.
 
 # Notes
 

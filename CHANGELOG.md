@@ -4,6 +4,7 @@
 #### next (January 2020)
 
  - Set safe working directory access mode
+ - Support option `-q` (quiet)'
 
 #### v2.2.1 (January 2020)
 

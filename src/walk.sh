@@ -104,7 +104,7 @@ expect () {
 	esac
 }
 
-syntaxline="syntax: $prog [-cyA] ARCHIVE "
+syntaxline="syntax: $prog [-cyAq] ARCHIVE "
 help () {
 	printf '%s\n' "$syntaxline"
 	echo ""
@@ -136,10 +136,11 @@ read_arguments () {
 		[ "$arg" = "--"     ] && break
 	done
 
-	while getopts 'cyAh' opt; do case "$opt" in
+	while getopts 'cyAqh' opt; do case "$opt" in
 		c)	create_empty=yes ;;
 		y)	force_answer=yes ;;
 		A)	pack_root=yes ;;
+		q)	quiet=yes ;;
 		h)	help ;;
 		--)	;;
 		*)	exit $EXIT_SYNTAX ;;

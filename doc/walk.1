@@ -3,7 +3,7 @@
 walk \- enter and manipulate archive files like directories
 .SH SYNOPSIS
 \fBwalk\fR
-[\fB-cyA\fR]
+[\fB-cyAq\fR]
 [\fB--\fR]
 \fIARCHIVE\fR
 .SH DESCRIPTION
@@ -87,6 +87,11 @@ Unpacking archives which contain the \fB.\fR directory entry
 can cause the current directory's owner and/or mode to be changed
 by the archiver program,
 so use this option with caution.
+.TP
+.B \-q
+Quiet mode;
+suppresses most archiver output
+such as filenames that are being extracted/compressed.
 .SH NOTES
 Beware that some archive types have their own idiosyncracies
 concerning file ownership:
