@@ -1,7 +1,7 @@
 # Changelog
 
 
-#### next (January 2020)
+#### v2.3.0 (January 2020)
 
  - Set safe working directory access mode
  - Support .deb packages
