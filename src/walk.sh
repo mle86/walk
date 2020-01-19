@@ -32,7 +32,6 @@ quiet=
 reentry=
 archv=
 temp=
-usearchv=
 type_found=
 
 EXIT_SYNTAX=1
@@ -157,24 +156,28 @@ read_arguments () {
 	archv="$1"
 }
 
+# unpack_archive ARCHIVEFILENAME TEMPFILENAME
 unpack_archive () {
+	local archivename="$1"
+	local tempfilename="$2"
+
 	# Rename archive file
-	mv -- "$archv" "$temp"
+	mv -- "$archivename" "$tempfilename"
 
 	# Unpack archive into new working dir of same name
-	create_working_dir "$archv" "$temp"
+	create_working_dir "$archivename" "$tempfilename"
 
 	# Extract archive there
-	cd -- "$archv"
+	cd -- "$archivename"
 	local status=0
-	fn_unpack "$usearchv" || status=$?
+	fn_unpack "$tempfilename" || status=$?
 
 	if [ "$status" -ne 0 ]; then
 		# Restore archive file, remove empty working directory
 		err "Unpacking failed (status $status)."
-		cd -- "$(dirname -- "$archv")"
-		rm -rf -- "$archv"
-		mv -- "$temp" "$archv"
+		cd -- "$(dirname -- "$archivename")"
+		rm -rf -- "$archivename"
+		mv -- "$tempfilename" "$archivename"
 		exit $EXIT_UNPACKFAIL
 	fi
 }
@@ -193,9 +196,10 @@ create_working_dir () {
 	mkdir $modeopt -- "$1"
 }
 
+# enter_tempdir ARCHIVENAME
 enter_tempdir () {
 	# Start new subshell:
-	cd -- "$archv/"  # unpack_archive() already does this for unpacking, but $archv is an absolute path
+	cd -- "$1/"  # unpack_archive() already does this for unpacking, but the argument is an absolute path
 	verbose "starting new shell"
 	${SHELL:-'/bin/bash'} -i  || true
 	verbose "shell terminated."
@@ -228,21 +232,24 @@ fn_packroot () {
 	fn_pack "$@"
 }
 
+# repack_archive ARCHIVEFILENAME TEMPFILENAME
 repack_archive () {
-	if ask "Recreate archive $archv ? [Y/n]" y; then
+	local archivename="$1"
+	local tempfilename="$2"
+	if ask "Recreate archive $archivename ? [Y/n]" y; then
 		msg "recreating archive"
-		fn_delete "$usearchv"
+		fn_delete "$tempfilename"
 		local status=0
 		if [ "$pack_root" ]; then
-			fn_packroot "$usearchv" || status=$?
+			fn_packroot "$tempfilename" || status=$?
 		else
-			fn_pack "$usearchv" || status=$?
+			fn_pack "$tempfilename" || status=$?
 		fi
 
 		if [ "$status" -ne 0 ]; then
-			rm -f "$usearchv"
+			rm -f "$tempfilename"
 			err "Repacking failed (status $status)."
-			err "Working directory kept: $archv"
+			err "Working directory kept: $archivename"
 			exit $EXIT_PACKFAIL
 		fi
 	fi
@@ -490,8 +497,6 @@ if [ -e "$temp" ] && [ -z "$reentry" ]; then
 	fail $EXIT_EXISTS "File or folder $temp already exists!"
 fi
 
-usearchv="$temp"
-
 #####################################################################
 
 if [ "$reentry" ]; then
@@ -500,16 +505,16 @@ if [ "$reentry" ]; then
 elif [ -f "$archv" ]; then
 	verbose "unpacking archive"
 	determine_archive_type "$archv"
-	unpack_archive
+	unpack_archive "$archv" "$temp"
 else
 	msg "creating archive"
 	determine_archive_type "$archv"
 	create_working_dir "$archv"
 fi
 
-enter_tempdir
+enter_tempdir "$archv"
 
-repack_archive
+repack_archive "$archv" "$temp"
 cleanup
 
 # fin
