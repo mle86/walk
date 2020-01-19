@@ -60,7 +60,7 @@ Currently, it supports handling these file types:
   (requires **rar** binary)
 * cpio
   (requires the GNU **cpio** binary)
-* ar
+* deb, ar
   (requires the GNU binutils **ar** binary)
 
 If the **-c** option has been used to create a new empty archive,
@@ -76,6 +76,7 @@ These extensions are recognized:
  .7z,
  .zip, .jar,
  .rar,
+ .deb,
  .cpio,
  .a
 

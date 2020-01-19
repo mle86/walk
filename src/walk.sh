@@ -123,6 +123,7 @@ help () {
 	echo " - 7-zip (requires 7z/7za/7zr)"
 	echo " - zip, jar (requires zip/unzip)"
 	echo " - rar (requires rar)"
+	echo " - deb"
 	echo " - cpio, ar"
 	echo ""
 	exit ${1:-$EXIT_HELP}
@@ -322,6 +323,30 @@ find_root () { find . "$@" -print0 ; }
 find_all  () { find_root -mindepth 1 "$@" ; }
 find_flat () { find_all -maxdepth 1 "$@" ; }
 
+find_subarchv () { find "$(pwd)" -maxdepth 1 -name "$@" -print -quit ; }
+
+unpack_subarchv () { (
+	local type_found=
+	local subarchv="$(find_subarchv "$1" -type f)"
+	[ -n "$subarchv" ] || return 0
+	archvtype "$subarchv" || return 0
+	local subtemp="$(tempname "$subarchv")"
+	unpack_archive "$subarchv" "$subtemp"
+	rm -- "$subtemp"
+); }
+
+repack_subarchv () { (
+	local type_found=
+	local subtemp="$(find_subarchv "$1" -type d)"
+	[ -n "$subtemp" ] || return 0
+	cd "$subtemp/"
+	archvtype "$subtemp" || return 0
+	local newsubarchv="$(tempname "$subtemp")"
+	fn_pack "$newsubarchv"
+	rm -rf -- "$subtemp"
+	mv -- "$newsubarchv" "$subtemp"
+); }
+
 archvtype () {
 	[ "$type_found" ] && return 0  # only check once
 
@@ -382,6 +407,20 @@ archvtype () {
 			[ "$quiet" ] || aropt="${aropt}v"
 			fn_unpack   () {                              ar  x${aropt} "$1" ; }
 			fn_pack     () { find_all -type f | xargs -0r ar rs${aropt} "$1" ; }
+			;;
+		*"debian binary package"*|"X-"*".deb")
+			aropt="oPU"
+			[ "$quiet" ] || aropt="${aropt}v"
+			fn_unpack () {
+				ar x${aropt} "$1"
+				unpack_subarchv 'control.tar*'
+				unpack_subarchv 'data.tar*'
+			}
+			fn_pack () {
+				repack_subarchv 'data.tar*'
+				repack_subarchv 'control.tar*'
+				find_all -type f | xargs -0r ar rs${aropt} "$1"
+			}
 			;;
 		*)
 			return 1

@@ -4,6 +4,7 @@
 #### next (January 2020)
 
  - Set safe working directory access mode
+ - Support .deb packages
  - Add .ar archive type recognition
  - Support option `-q` (quiet)'
 
