@@ -440,9 +440,9 @@ calculate_dirmode () {
 	printf '%s\n' "u=rwx,g=${setmode_g},o=${setmode_o}"
 }
 
+# findbin BINARY...
+#  Returns the path of the first BINARY that which(1) could find.
 findbin () {
-	# findbin BINARY...
-	#  Returns the path of the first BINARY that which(1) could find.
 	local list="$*"
 	while [ $# -gt 0 ]; do
 		which "$1" && return
@@ -452,10 +452,17 @@ findbin () {
 }
 
 _7z () {
-	local bin
+	local bin=
 	bin=$(findbin 7z 7za 7zr) || exit $?
 	"$bin" "$@"
 }
+
+abspath () { readlink -f -- "$1" ; }
+
+# tempname ARCHIVE
+#  Prints a suitable temporary filename for the ARCHIVE.
+#  This assumes that ARCHIVE is an absolute path.
+tempname () { printf '%s\n' "$(dirname -- "$1")/.$(basename -- "$1")-WALK-$(date +'%Y%m%d-%H%M%S')" ; }
 
 
 #####################################################################
@@ -476,8 +483,8 @@ if [ -e "$archv" ] && [ ! -f "$archv" ]; then
 	fi
 fi
 
-archv="$(readlink -f -- "$archv")"  # get absolute path to archive
-[ -n "$temp" ] || temp="$(dirname -- "$archv")/.$(basename -- "$archv")-WALK-$(date +'%Y%m%d-%H%M%S')"
+archv="$(abspath "$archv")"
+[ -n "$temp" ] || temp="$(tempname "$archv")"
 
 if [ -e "$temp" ] && [ -z "$reentry" ]; then
 	fail $EXIT_EXISTS "File or folder $temp already exists!"
