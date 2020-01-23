@@ -1,6 +1,11 @@
 # Changelog
 
 
+#### next (January 2020)
+
+ - Set `WALK_IN_ARCHIVE` env var to opened archive filename
+
+
 #### v2.3.0 (January 2020)
 
  - Set safe working directory access mode

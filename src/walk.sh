@@ -202,7 +202,8 @@ enter_tempdir () {
 	# Start new subshell:
 	cd -- "$1/"  # unpack_archive() already does this for unpacking, but the argument is an absolute path
 	verbose "starting new shell"
-	${SHELL:-'/bin/bash'} -i  || true
+	WALK_IN_ARCHIVE="$1"  \
+	  ${SHELL:-'/bin/bash'} -i  || true
 	verbose "shell terminated."
 }
 

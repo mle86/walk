@@ -117,6 +117,16 @@ concerning file ownership:
   but will always discard them on unpacking.
 * **7z** and **rar** archives don't store owner informations.
 
+# Environment Variables
+
+
+* *WALK_IN_ARCHIVE*  
+  **walk** will set this variable
+  to the currently-opened archive's original filename
+  (which is now a directory).
+  This may be used by other shell tools
+  such as a fancy dynamic prompt.
+
 # Example
 
 
