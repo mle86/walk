@@ -59,22 +59,46 @@ fail () {
 	exit $status
 }
 
+ANSWER=
+
+# ask PROMPT [DEFAULT [FORCE]]
 ask () {
-	# ask PROMPT [DEFAULT]
-	local response=
-	if [ "$force_answer" = "default" ]; then
+	local prompt="$1"
+	local default="$2"
+	local force="$3"
+
+	ANSWER=
+	if [ "$force" = "default" ]; then
 		# use default answer for all questions,
 		# or 'yes' if there is no default for this question
-		response="${2:-yes}"
-	elif [ "$force_answer" ]; then
-		# use $force_answer for all questions
-		response="$force_answer"
+		ANSWER="${default:-yes}"
+	elif [ "$force" ]; then
+		# use $force for all questions
+		ANSWER="$force"
+	elif [ "$ASK_EOF" ]; then
+		# assume user entered "no" here.
+		# still show the prompt:
+		printf '%s -\n' "$prompt" >&2
+		ANSWER="no"
+	elif ! read -p "$prompt " ANSWER; then
+		# eof, assume user entered "no" here and for all following questions:
+		printf -- '-\n' >&2
+		ANSWER="no"
+		ASK_EOF=yes
+	elif [ -z "$ANSWER" ]; then
+		# ok, user hit Enter without typing anything
+		# use default, might be empty itself
+		ANSWER="$default"
 	else
-		# show prompt, query answer from user
-		read -p "$1 " response
-		[ -z "$response" ] && response="$2"  # use default, might be empty itself
+		:; # ok, user entered something!
 	fi
-	[ "$response" = "y" -o "$response" = "Y" -o "$response" = "yes" -o "$response" = "Yes" ]  # is "yes"-like?
+
+	! [ "$ASK_EOF" ]
+}
+
+# ask_yesno PROMPT [DEFAULT [FORCE]]
+ask_yesno () {
+	ask "$@" && [ "$ANSWER" = "y" -o "$ANSWER" = "Y" -o "$ANSWER" = "yes" -o "$ANSWER" = "Yes" ]
 }
 
 expect () {
@@ -238,7 +262,7 @@ fn_packroot () {
 repack_archive () {
 	local archivename="$1"
 	local tempfilename="$2"
-	if ask "Recreate archive $archivename ? [Y/n]" y; then
+	if ask_yesno "Recreate archive $archivename ? [Y/n]" y "$force_answer"; then
 		msg "recreating archive"
 		fn_delete "$tempfilename"
 		local status=0
@@ -258,7 +282,7 @@ repack_archive () {
 }
 
 cleanup () {
-	if ask "Delete temporary directory? [Y/n]" y; then
+	if ask_yesno "Delete temporary directory? [Y/n]" y "$force_answer"; then
 		verbose "deleting temp dir"
 		rm -rf -- "$archv"
 	else
