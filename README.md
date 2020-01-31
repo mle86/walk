@@ -78,7 +78,7 @@ These extensions are recognized:
  .rar,
  .deb,
  .cpio,
- .a
+ .a, .ar
 
 # Options
 
