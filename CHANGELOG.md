@@ -1,10 +1,10 @@
 # Changelog
 
 
-#### next (January 2020)
+#### next (February 2020)
 
+ - Improved user interaction on exit
  - Set `WALK_IN_ARCHIVE` env var to opened archive filename
-
 
 #### v2.3.0 (January 2020)
 

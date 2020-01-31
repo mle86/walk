@@ -98,7 +98,12 @@ ask () {
 
 # ask_yesno PROMPT [DEFAULT [FORCE]]
 ask_yesno () {
-	ask "$@" && [ "$ANSWER" = "y" -o "$ANSWER" = "Y" -o "$ANSWER" = "yes" -o "$ANSWER" = "Yes" ]
+	while ask "$@"; do case "$ANSWER" in
+		y|Y|yes|Yes)  return 0 ;;
+		n|N|no|No)  return 1 ;;
+		# something else? ask again.
+	esac; done
+	return 1  # eof
 }
 
 expect () {
