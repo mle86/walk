@@ -267,7 +267,30 @@ fn_packroot () {
 repack_archive () {
 	local archivename="$1"
 	local tempfilename="$2"
-	if ask_yesno "Recreate archive $archivename ? [Y/n]" y "$force_answer"; then
+
+	local do_recreate=
+	while ask "Recreate archive $archivename ? [Y/n/f/d/?]" y "$force_answer"; do case "$ANSWER" in
+		n|N|no|No)
+			break ;;
+		y|Y|yes|Yes)
+			do_recreate=yes
+			break ;;
+		f|F|finish|Finish)
+			do_recreate=yes
+			force_answer=yes
+			break ;;
+		d|D|discard|Discard)
+			force_answer=yes
+			break ;;
+		"?")  printf '  %s\n' >&2 \
+			"y/yes:     Recreate,       then ask about temporary dir." \
+			"n/no:      Don't recreate, then ask about temporary dir." \
+			"f/finish:  Recreate,       then delete temporary dir." \
+			"d/discard: Don't recreate, but  delete temporary dir." \
+			;;
+	esac; done
+
+	if [ "$do_recreate" ]; then
 		msg "recreating archive"
 		fn_delete "$tempfilename"
 		local status=0
